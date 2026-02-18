@@ -66,3 +66,18 @@ Since this is a client-side React application (Vite), it can be easily deployed 
 - **Netlify**: Drag and drop the `dist` folder or connect your Git repo.
 - **Vercel**: Connect your Git repo; it usually detects Vite automatically.
 - **GitHub Pages**: Use a workflow to build and deploy the `dist` folder.
+
+#### GitHub Pages Setup
+
+1.  **Configure Base URL**: If deploying to a project page (e.g., `user.github.io/repo`), add the base path in `vite.config.js`:
+    ```js
+    export default defineConfig({
+      base: '/socratic-app/', // Replace with your repo name
+      plugins: [react()],
+    })
+    ```
+2.  **Add Workflow**: Add the provided `.github/workflows/deploy.yml` file to your repository.
+3.  **Configure Settings**:
+    - Go to your repository on GitHub.
+    - Navigate to **Settings** > **Pages**.
+    - Under **Build and deployment**, select **GitHub Actions** as the source.
