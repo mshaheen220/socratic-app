@@ -98,7 +98,7 @@ export default function App() {
           {step === 2 && (
             <MultiSelectStep 
               label="2. Which thinking errors are present?"
-              description="Select as many as are appropriate."
+              description="Identify any cognitive distortions that might be influencing this thought. Select all that apply."
               options={THINKING_ERRORS}
               value={session.selectedErrors}
               onChange={(val) => setSession({...session, selectedErrors: val})}
@@ -127,9 +127,10 @@ export default function App() {
             <>
               <MultiSelectStep 
                 label="5. Feelings vs. Facts:"
+                description="Determining if the thought is based on emotions rather than objective reality."
                 options={[
-                  { id: 'feelings', label: 'Feelings' },
-                  { id: 'facts', label: 'Facts' }
+                  { id: 'feelings', label: 'Feelings', description: 'The thought is based more on emotions than objective reality.' },
+                  { id: 'facts', label: 'Facts', description: 'The thought is based on verifiable facts.' }
                 ]}
                 value={session.feelingsVsFacts}
                 onChange={(val) => setSession({...session, feelingsVsFacts: val})}
@@ -163,10 +164,11 @@ export default function App() {
 
               <MultiSelectStep 
                 label="9. Habit or Past Experience:"
+                description="Assessing if the thought is based on old habits or past events rather than current truth. Select all that apply."
                 options={[
-                  { id: 'habit', label: 'Old Habit' },
-                  { id: 'past', label: 'Past Experience' },
-                  { id: 'current', label: 'Current Truth' }
+                  { id: 'habit', label: 'Old Habit', description: 'The thought is a habitual pattern that may not reflect current reality.' },
+                  { id: 'past', label: 'Past Experience', description: 'The thought is based on past experiences that may not be relevant now.' },
+                  { id: 'current', label: 'Current Truth', description: 'The thought is based on current, accurate information.' }
                 ]}
                 value={session.habitOrPast}
                 onChange={(val) => setSession({...session, habitOrPast: val})}
@@ -175,9 +177,10 @@ export default function App() {
 
               <MultiSelectStep 
                 label="10. Likelihood vs. Possibility:"
+                description="Deciding if the scenario is a likely outcome or just one of many possibilities."
                 options={[
-                  { id: 'likely', label: 'Likely Outcome' },
-                  { id: 'possible', label: 'Just a Possibility' }
+                  { id: 'likely', label: 'Likely Outcome', description: 'The thought is based on a high probability of occurrence.' },
+                  { id: 'possible', label: 'Just a Possibility', description: 'The thought is based on a low probability of occurrence.' }
                 ]}
                 value={session.likelihoodVsPossibility}
                 onChange={(val) => setSession({...session, likelihoodVsPossibility: val})}
