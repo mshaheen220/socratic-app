@@ -50,8 +50,13 @@ export const generateSessionInsight = async (session) => {
   if (!response.ok) throw new Error('Failed to generate insight');
 
   const data = await response.json();
+  let insight = data.candidates[0].content.parts[0].text;
+
+  // Remove markdown code blocks if present
+  insight = insight.replace(/^```html\s*/i, '').replace(/\s*```$/, '');
+
   return {
-    insight: data.candidates[0].content.parts[0].text,
+    insight,
     prompt
   };
 };
