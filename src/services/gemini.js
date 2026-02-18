@@ -24,8 +24,6 @@ export const generateSessionInsight = async (session) => {
     - Evidence For: ${session.evidenceFor}
     - Evidence Against: ${session.evidenceAgainst}
     - Feelings vs Facts: ${session.feelingsVsFacts}
-    - Level of Criticism: ${session.levelOfCriticism}
-    - Exaggeration Check: ${session.exaggerationCheck}
     - Alternative Interpretations: ${session.alternativeInterpretations}
     - Habit/Past Influence: ${Array.isArray(session.habitOrPast) ? session.habitOrPast.join(', ') : session.habitOrPast}
     - Likelihood vs Possibility: ${session.likelihoodVsPossibility}

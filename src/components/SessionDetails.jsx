@@ -77,8 +77,6 @@ const SessionDetails = ({ session, onClose }) => {
             <div className="detail-group"><label>Evidence For</label><p>{session.evidenceFor || '-'}</p></div>
             <div className="detail-group"><label>Evidence Against</label><p>{session.evidenceAgainst || '-'}</p></div>
             <div className="detail-group"><label>Feelings vs Facts</label><p>{getLabel(session.feelingsVsFacts, [{id:'feelings', label:'Feelings'}, {id:'facts', label:'Facts'}])}</p></div>
-            <div className="detail-group"><label>Level of Criticism</label><p>{session.levelOfCriticism || '-'}</p></div>
-            <div className="detail-group"><label>Exaggeration</label><p>{session.exaggerationCheck || '-'}</p></div>
             <div className="detail-group"><label>Alternative View</label><p>{session.alternativeInterpretations || '-'}</p></div>
             <div className="detail-group">
               <label>Habit/Past</label>

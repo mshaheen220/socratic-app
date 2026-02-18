@@ -21,8 +21,6 @@ export default function App() {
     evidenceFor: '',
     evidenceAgainst: '',
     feelingsVsFacts: '',
-    levelOfCriticism: '',
-    exaggerationCheck: '',
     alternativeInterpretations: '',
     habitOrPast: '',
     likelihoodVsPossibility: '',
@@ -39,8 +37,6 @@ export default function App() {
       evidenceFor: '',
       evidenceAgainst: '',
       feelingsVsFacts: '',
-      levelOfCriticism: '',
-      exaggerationCheck: '',
       alternativeInterpretations: '',
       habitOrPast: '',
       likelihoodVsPossibility: '',
@@ -80,8 +76,6 @@ export default function App() {
       evidenceFor: '',
       evidenceAgainst: '',
       feelingsVsFacts: '',
-      levelOfCriticism: '',
-      exaggerationCheck: '',
       alternativeInterpretations: '',
       habitOrPast: '',
       likelihoodVsPossibility: '',
@@ -177,34 +171,19 @@ export default function App() {
                 onChange={(val) => setSession({...session, feelingsVsFacts: val})}
                 singleSelect={true}
               />
-
               <QuestionStep 
-                label="7. Level of Criticism:"
-                value={session.levelOfCriticism}
-                onChange={(v) => setSession({...session, levelOfCriticism: v})}
-                placeholder="Evaluating if the thought is overly critical of yourself or others."
-              />
-
-              <QuestionStep 
-                label="8. Exaggeration Check:"
-                value={session.exaggerationCheck}
-                onChange={(v) => setSession({...session, exaggerationCheck: v})}
-                placeholder="Reflecting on whether the thought might be an exaggeration of the truth."
+                label="7. Alternative Interpretations:"
+                value={session.alternativeInterpretations}
+                onChange={(v) => setSession({...session, alternativeInterpretations: v})}
+                placeholder="Considering how others might interpret the same situation differently."
               />
             </>
           )}
 
           {step === 6 && (
             <>
-              <QuestionStep 
-                label="9. Alternative Interpretations:"
-                value={session.alternativeInterpretations}
-                onChange={(v) => setSession({...session, alternativeInterpretations: v})}
-                placeholder="Considering how others might interpret the same situation differently."
-              />
-
               <MultiSelectStep 
-                label="10. Habit or Past Experience:"
+                label="8. Habit or Past Experience:"
                 description="Assessing if the thought is based on old habits or past events rather than current truth. Select all that apply."
                 options={[
                   { id: 'habit', label: 'Old Habit', description: 'The thought is a habitual pattern that may not reflect current reality.' },
@@ -217,7 +196,7 @@ export default function App() {
               />
 
               <MultiSelectStep 
-                label="11. Likelihood vs. Possibility:"
+                label="9. Likelihood vs. Possibility:"
                 description="Deciding if the scenario is a likely outcome or just one of many possibilities."
                 options={[
                   { id: 'likely', label: 'Likely Outcome', description: 'The thought is based on a high probability of occurrence.' },
