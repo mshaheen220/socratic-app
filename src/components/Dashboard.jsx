@@ -21,7 +21,7 @@ const Dashboard = ({ entries, onNewSession, onViewEntry }) => {
             <div key={entry.id} className="dashboard-card" onClick={() => onViewEntry(entry)}>
               <div className="card-header">
                 <span className="card-date">{new Date(entry.id).toLocaleDateString()}</span>
-                <span className="card-badge">{entry.selectedErrors.length} Errors</span>
+                <span className="card-badge"></span>
               </div>
               <div className="card-thought">{entry.thought}</div>
             </div>

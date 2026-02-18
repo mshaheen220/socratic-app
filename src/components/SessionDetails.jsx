@@ -33,6 +33,13 @@ const SessionDetails = ({ session, onClose }) => {
             <p className="highlight-text">{session.thought}</p>
           </div>
 
+          {session.aiInsight && (
+            <div className="detail-group" style={{ background: '#f0f9ff', padding: '1rem', borderRadius: '8px' }}>
+              <label style={{ color: '#0369a1' }}>AI Insight</label>
+              <p style={{ whiteSpace: 'pre-wrap' }}>{session.aiInsight}</p>
+            </div>
+          )}
+
           <div className="detail-group">
             <label>Thinking Errors</label>
             <div className="tags">

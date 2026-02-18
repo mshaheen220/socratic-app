@@ -27,6 +27,14 @@ Use this app when you catch yourself feeling:
 - Node.js (v14 or higher)
 - npm or yarn
 
+### Configuration
+
+To use the AI features, create a `.env` file in the root directory and add your Gemini API key:
+
+```env
+VITE_GOOGLE_API_KEY=your_api_key_here
+```
+
 ### Installation
 
 1. Clone the repository:
@@ -81,3 +89,14 @@ Since this is a client-side React application (Vite), it can be easily deployed 
     - Go to your repository on GitHub.
     - Navigate to **Settings** > **Pages**.
     - Under **Build and deployment**, select **GitHub Actions** as the source.
+
+#### Setting up the API Key for GitHub Pages
+
+Since `.env` files are not committed to Git, you must set the API key as a repository secret:
+
+1.  Go to your repository **Settings**.
+2.  Select **Secrets and variables** > **Actions** from the left sidebar.
+3.  Click **New repository secret**.
+4.  Name: `VITE_GOOGLE_API_KEY`.
+5.  Value: Paste your Gemini API key.
+6.  The next time the deployment workflow runs, it will inject this key into the build.

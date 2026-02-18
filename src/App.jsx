@@ -5,6 +5,7 @@ import Dashboard from './components/Dashboard';
 import SessionDetails from './components/SessionDetails';
 import { THINKING_ERRORS } from './constants/thinkingErrors';
 import { COGNITIVE_DISTORTIONS } from './constants/cognitiveDisorders';
+import { generateSessionInsight } from './services/gemini';
 import { useLocalStorage } from './hooks/useLocalStorage';
 
 export default function App() {
@@ -12,6 +13,7 @@ export default function App() {
   const [view, setView] = useState('dashboard'); // 'dashboard' | 'wizard'
   const [selectedEntry, setSelectedEntry] = useState(null);
   const [step, setStep] = useState(1);
+  const [isGenerating, setIsGenerating] = useState(false);
   const [session, setSession] = useState({
     thought: '',
     selectedErrors: [],
@@ -23,7 +25,8 @@ export default function App() {
     exaggerationCheck: '',
     alternativeInterpretations: '',
     habitOrPast: '',
-    likelihoodVsPossibility: ''
+    likelihoodVsPossibility: '',
+    aiInsight: ''
   });
 
   const totalSteps = 6;
@@ -40,7 +43,8 @@ export default function App() {
       exaggerationCheck: '',
       alternativeInterpretations: '',
       habitOrPast: '',
-      likelihoodVsPossibility: ''
+      likelihoodVsPossibility: '',
+      aiInsight: ''
     });
     setStep(1);
     setView('wizard');
@@ -53,9 +57,21 @@ export default function App() {
 
   const prevStep = () => setStep(s => Math.max(s - 1, 1));
 
-  const saveSession = () => {
+  const saveSession = async () => {
     if (!session.thought) return alert("Identify a thought first!");
-    setHistory([...history, { ...session, id: Date.now() }]);
+    
+    setIsGenerating(true);
+    let insight = '';
+    let prompt = '';
+    try {
+      const result = await generateSessionInsight(session);
+      insight = result.insight;
+      prompt = result.prompt;
+    } catch (error) {
+      console.error("AI Insight generation failed:", error);
+    }
+
+    setHistory([...history, { ...session, aiInsight: insight, aiPrompt: prompt, id: Date.now() }]);
     setSession({
       thought: '',
       selectedErrors: [],
@@ -67,10 +83,12 @@ export default function App() {
       exaggerationCheck: '',
       alternativeInterpretations: '',
       habitOrPast: '',
-      likelihoodVsPossibility: ''
+      likelihoodVsPossibility: '',
+      aiInsight: ''
     });
     setStep(1);
     setView('dashboard');
+    setIsGenerating(false);
   };
 
   return (
@@ -212,7 +230,9 @@ export default function App() {
             {step < totalSteps ? (
               <button onClick={nextStep} className="nav-btn primary">Next</button>
             ) : (
-              <button onClick={saveSession} className="nav-btn success">Save Session</button>
+              <button onClick={saveSession} disabled={isGenerating} className="nav-btn success">
+                {isGenerating ? 'Saving & Analyzing...' : 'Save Session'}
+              </button>
             )}
           </div>
         </>
