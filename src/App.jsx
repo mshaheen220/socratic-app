@@ -98,6 +98,7 @@ export default function App() {
           {step === 2 && (
             <MultiSelectStep 
               label="2. Which thinking errors are present?"
+              description="Select as many as are appropriate."
               options={THINKING_ERRORS}
               value={session.selectedErrors}
               onChange={(val) => setSession({...session, selectedErrors: val})}
