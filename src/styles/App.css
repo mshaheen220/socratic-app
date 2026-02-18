@@ -205,6 +205,23 @@ textarea:focus {
   font-weight: 500;
 }
 
+.delete-btn {
+  background: transparent;
+  border: none;
+  color: #9ca3af;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  transition: all 0.2s;
+}
+
+.delete-btn:hover {
+  color: #ef4444;
+  background-color: #fee2e2;
+}
+
 .card-thought {
   font-weight: 600;
   font-size: 1.1rem;

@@ -7,7 +7,8 @@ export const THINKING_ERRORS = [
     examples: [
       'You get one answer wrong on a long test, and all you can think about is the mistake.',
       'You score two goals in your soccer game, but all you can think about is the shot you missed.'
-    ] // [cite: 2-5]
+    ], // [cite: 2-5]
+    color: { text: '#1e40af', background: '#dbeafe' }
   },
   { 
     id: 'blowing_up', 
@@ -17,7 +18,8 @@ export const THINKING_ERRORS = [
     examples: [
       "You get a stain on your new shoes and you think they're ruined and can't be worn anymore.",
       "I'm not allowed to see my friends on Friday. My life is horrible!"
-    ] // [cite: 6-9]
+    ], // [cite: 6-9]
+    color: { text: '#991b1b', background: '#fee2e2' }
   },
   { 
     id: 'fortune_telling', 
@@ -27,7 +29,8 @@ export const THINKING_ERRORS = [
     examples: [
       "I know if I ask her to the dance she's going to say no.",
       "I bet no one will come to my birthday party."
-    ] // [cite: 11-14]
+    ], // [cite: 11-14]
+    color: { text: '#6b21a8', background: '#f3e8ff' }
   },
   { 
     id: 'mind_reading', 
@@ -37,7 +40,8 @@ export const THINKING_ERRORS = [
     examples: [
       "People are looking at me. They probably think my shirt is ugly.",
       "Emma didn't invite me to her party. I bet she thinks I'm weird."
-    ] // [cite: 19-22]
+    ], // [cite: 19-22]
+    color: { text: '#9d174d', background: '#fce7f3' }
   },
   { 
     id: 'negative_labeling', 
@@ -47,7 +51,8 @@ export const THINKING_ERRORS = [
     examples: [
       "I'm a loser so my artwork stinks.",
       "I'm so stupid. Everything I say is dumb."
-    ] // [cite: 23-26]
+    ], // [cite: 23-26]
+    color: { text: '#9a3412', background: '#ffedd5' }
   },
   { 
     id: 'should_statements', 
@@ -57,7 +62,8 @@ export const THINKING_ERRORS = [
     examples: [
       "People should always be nice to me.",
       "I should always be happy. I should never be sad."
-    ] // [cite: 44-47]
+    ], // [cite: 44-47]
+    color: { text: '#155e75', background: '#cffafe' }
   },
   { 
     id: 'feelings_as_facts', 
@@ -67,7 +73,8 @@ export const THINKING_ERRORS = [
     examples: [
       "I feel ugly, so I must be ugly.",
       "I feel like I'm a bad friend, so I must be a bad friend."
-    ] // [cite: 39-42]
+    ], // [cite: 39-42]
+    color: { text: '#115e59', background: '#ccfbf1' }
   },
   { 
     id: 'self_blame', 
@@ -77,7 +84,8 @@ export const THINKING_ERRORS = [
     examples: [
       "When your basketball team loses a game, you think it's entirely your fault.",
       "Alicia is sad today. I probably did something to upset her."
-    ] // [cite: 35-38]
+    ], // [cite: 35-38]
+    color: { text: '#92400e', background: '#fef3c7' }
   },
   { 
     id: 'all_or_nothing', 
@@ -87,6 +95,7 @@ export const THINKING_ERRORS = [
     examples: [
       "If I don't get an A on every test, I'm not smart.",
       "I have to win every tennis match I play, otherwise I'm worthless."
-    ] // [cite: 27-30]
+    ], // [cite: 27-30]
+    color: { text: '#1f2937', background: '#f3f4f6' }
   }
 ];

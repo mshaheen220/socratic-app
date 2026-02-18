@@ -59,7 +59,7 @@ export default function App() {
 
   const saveSession = async () => {
     if (!session.thought) return alert("Identify a thought first!");
-    
+
     setIsGenerating(true);
     let insight = '';
     let prompt = '';
@@ -67,11 +67,12 @@ export default function App() {
       const result = await generateSessionInsight(session);
       insight = result.insight;
       prompt = result.prompt;
-    } catch (error) {
-      console.error("AI Insight generation failed:", error);
+    } catch (e) {
+      console.error(e);
     }
 
-    setHistory([...history, { ...session, aiInsight: insight, aiPrompt: prompt, id: Date.now() }]);
+    const newEntry = { ...session, aiInsight: insight, aiPrompt: prompt, id: Date.now() };
+    setHistory([...history, newEntry]);
     setSession({
       thought: '',
       selectedErrors: [],
@@ -88,7 +89,14 @@ export default function App() {
     });
     setStep(1);
     setView('dashboard');
+    setSelectedEntry(newEntry);
     setIsGenerating(false);
+  };
+
+  const deleteEntry = (id) => {
+    if (window.confirm('Are you sure you want to delete this session?')) {
+      setHistory(history.filter(h => h.id !== id));
+    }
   };
 
   return (
@@ -98,6 +106,7 @@ export default function App() {
           entries={history} 
           onNewSession={startNewSession} 
           onViewEntry={setSelectedEntry} 
+          onDeleteEntry={deleteEntry}
         />
       ) : (
         <>

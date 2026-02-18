@@ -1,6 +1,6 @@
 import React from 'react';
 
-const Dashboard = ({ entries, onNewSession, onViewEntry }) => {
+const Dashboard = ({ entries, onNewSession, onViewEntry, onDeleteEntry }) => {
   return (
     <div className="dashboard">
       <div className="dashboard-header">
@@ -21,7 +21,19 @@ const Dashboard = ({ entries, onNewSession, onViewEntry }) => {
             <div key={entry.id} className="dashboard-card" onClick={() => onViewEntry(entry)}>
               <div className="card-header">
                 <span className="card-date">{new Date(entry.id).toLocaleDateString()}</span>
-                <span className="card-badge"></span>
+                <button 
+                  className="delete-btn"
+                  title="Delete session"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onDeleteEntry(entry.id);
+                  }}
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <polyline points="3 6 5 6 21 6"></polyline>
+                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                  </svg>
+                </button>
               </div>
               <div className="card-thought">{entry.thought}</div>
             </div>
