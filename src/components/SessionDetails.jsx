@@ -1,10 +1,12 @@
 import React from 'react';
 import { THINKING_ERRORS } from '../constants/thinkingErrors';
+import { COGNITIVE_DISTORTIONS } from '../constants/cognitiveDisorders';
 
 const SessionDetails = ({ session, onClose }) => {
   if (!session) return null;
 
   const getErrorLabel = (id) => THINKING_ERRORS.find(e => e.id === id)?.label || id;
+  const getDistortionLabel = (id) => COGNITIVE_DISTORTIONS.find(d => d.id === id)?.label || id;
   
   // Helper to display label for single-select IDs
   const getLabel = (val, options) => {
@@ -37,6 +39,19 @@ const SessionDetails = ({ session, onClose }) => {
               {session.selectedErrors.length > 0 ? (
                 session.selectedErrors.map(id => (
                   <span key={id} className="tag">{getErrorLabel(id)}</span>
+                ))
+              ) : (
+                <p>None identified</p>
+              )}
+            </div>
+          </div>
+
+          <div className="detail-group">
+            <label>Cognitive Distortions</label>
+            <div className="tags">
+              {session.selectedDistortions && session.selectedDistortions.length > 0 ? (
+                session.selectedDistortions.map(id => (
+                  <span key={id} className="tag">{getDistortionLabel(id)}</span>
                 ))
               ) : (
                 <p>None identified</p>

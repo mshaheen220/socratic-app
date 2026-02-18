@@ -4,6 +4,7 @@ import MultiSelectStep from './components/MultiSelectStep';
 import Dashboard from './components/Dashboard';
 import SessionDetails from './components/SessionDetails';
 import { THINKING_ERRORS } from './constants/thinkingErrors';
+import { COGNITIVE_DISTORTIONS } from './constants/cognitiveDisorders';
 import { useLocalStorage } from './hooks/useLocalStorage';
 
 export default function App() {
@@ -14,6 +15,7 @@ export default function App() {
   const [session, setSession] = useState({
     thought: '',
     selectedErrors: [],
+    selectedDistortions: [],
     evidenceFor: '',
     evidenceAgainst: '',
     feelingsVsFacts: '',
@@ -24,12 +26,13 @@ export default function App() {
     likelihoodVsPossibility: ''
   });
 
-  const totalSteps = 5;
+  const totalSteps = 6;
 
   const startNewSession = () => {
     setSession({
       thought: '',
       selectedErrors: [],
+      selectedDistortions: [],
       evidenceFor: '',
       evidenceAgainst: '',
       feelingsVsFacts: '',
@@ -56,6 +59,7 @@ export default function App() {
     setSession({
       thought: '',
       selectedErrors: [],
+      selectedDistortions: [],
       evidenceFor: '',
       evidenceAgainst: '',
       feelingsVsFacts: '',
@@ -106,16 +110,26 @@ export default function App() {
           )}
 
           {step === 3 && (
+            <MultiSelectStep 
+              label="3. Are there other cognitive distortions?"
+              description="Check if any of these specific distortions apply to your thought."
+              options={COGNITIVE_DISTORTIONS}
+              value={session.selectedDistortions}
+              onChange={(val) => setSession({...session, selectedDistortions: val})}
+            />
+          )}
+
+          {step === 4 && (
             <>
               <QuestionStep 
-                label="3. Evidence for this thought:"
+                label="4. Evidence for this thought:"
                 value={session.evidenceFor}
                 onChange={(v) => setSession({...session, evidenceFor: v})}
                 placeholder="Listing facts that support the thought."
               />
 
               <QuestionStep 
-                label="4. Evidence against this thought:"
+                label="5. Evidence against this thought:"
                 value={session.evidenceAgainst}
                 onChange={(v) => setSession({...session, evidenceAgainst: v})}
                 placeholder="Listing facts that contradict the thought."
@@ -123,10 +137,10 @@ export default function App() {
             </>
           )}
 
-          {step === 4 && (
+          {step === 5 && (
             <>
               <MultiSelectStep 
-                label="5. Feelings vs. Facts:"
+                label="6. Feelings vs. Facts:"
                 description="Determining if the thought is based on emotions rather than objective reality."
                 options={[
                   { id: 'feelings', label: 'Feelings', description: 'The thought is based more on emotions than objective reality.' },
@@ -138,14 +152,14 @@ export default function App() {
               />
 
               <QuestionStep 
-                label="6. Level of Criticism:"
+                label="7. Level of Criticism:"
                 value={session.levelOfCriticism}
                 onChange={(v) => setSession({...session, levelOfCriticism: v})}
                 placeholder="Evaluating if the thought is overly critical of yourself or others."
               />
 
               <QuestionStep 
-                label="7. Exaggeration Check:"
+                label="8. Exaggeration Check:"
                 value={session.exaggerationCheck}
                 onChange={(v) => setSession({...session, exaggerationCheck: v})}
                 placeholder="Reflecting on whether the thought might be an exaggeration of the truth."
@@ -153,17 +167,17 @@ export default function App() {
             </>
           )}
 
-          {step === 5 && (
+          {step === 6 && (
             <>
               <QuestionStep 
-                label="8. Alternative Interpretations:"
+                label="9. Alternative Interpretations:"
                 value={session.alternativeInterpretations}
                 onChange={(v) => setSession({...session, alternativeInterpretations: v})}
                 placeholder="Considering how others might interpret the same situation differently."
               />
 
               <MultiSelectStep 
-                label="9. Habit or Past Experience:"
+                label="10. Habit or Past Experience:"
                 description="Assessing if the thought is based on old habits or past events rather than current truth. Select all that apply."
                 options={[
                   { id: 'habit', label: 'Old Habit', description: 'The thought is a habitual pattern that may not reflect current reality.' },
@@ -176,7 +190,7 @@ export default function App() {
               />
 
               <MultiSelectStep 
-                label="10. Likelihood vs. Possibility:"
+                label="11. Likelihood vs. Possibility:"
                 description="Deciding if the scenario is a likely outcome or just one of many possibilities."
                 options={[
                   { id: 'likely', label: 'Likely Outcome', description: 'The thought is based on a high probability of occurrence.' },
