@@ -1,12 +1,10 @@
-import React, { useRef, useState } from 'react';
+import React, { useState } from 'react';
 import { THINKING_ERRORS } from '../constants/thinkingErrors';
 import { COGNITIVE_DISTORTIONS } from '../constants/cognitiveDisorders';
 import Tooltip from './Tooltip';
-import InfoSection from './InfoSection';
-import { exportData } from '../utils';
+import Card from './Card';
 
-const Dashboard = ({ entries, onNewSession, onViewEntry, onDeleteEntry, onImport, lastBackup, onRecordBackup, theme, toggleTheme }) => {
-  const fileInputRef = useRef(null);
+const Journal = ({ entries, onViewEntry, onDeleteEntry }) => {
   const [sortBy, setSortBy] = useState('dateDesc');
   const [showFilters, setShowFilters] = useState(false);
   const [filters, setFilters] = useState({
@@ -15,25 +13,6 @@ const Dashboard = ({ entries, onNewSession, onViewEntry, onDeleteEntry, onImport
     intensity: 'all',
     efficacy: 'all'
   });
-
-  const handleBackup = () => {
-    exportData(entries);
-    if (onRecordBackup) onRecordBackup();
-  };
-
-  const handleFileChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      onImport(file);
-    }
-    e.target.value = null;
-  };
-
-  const latestEntry = entries.length > 0 ? entries[entries.length - 1] : null;
-  const hasUnsavedChanges = latestEntry && (!lastBackup || latestEntry.id > lastBackup);
-  const backupTooltip = lastBackup 
-    ? `Last backup: ${new Date(lastBackup).toLocaleString()}` 
-    : "No backups yet";
 
   const toggleFilter = (category, id) => {
     setFilters(prev => {
@@ -94,35 +73,7 @@ const Dashboard = ({ entries, onNewSession, onViewEntry, onDeleteEntry, onImport
   const processedEntries = getProcessedEntries();
 
   return (
-    <div className="dashboard">
-      <div className="dashboard-header">
-        <h1 className="app-title dashboard-title">My Thoughts</h1>
-        <div className="dashboard-actions">
-          <Tooltip text={backupTooltip}>
-            <button 
-              onClick={handleBackup} 
-              className={`nav-btn secondary btn-sm btn-backup ${hasUnsavedChanges ? 'pulse-alert' : ''}`} 
-            >
-              {hasUnsavedChanges && <span>⚠️</span>} Backup
-            </button>
-          </Tooltip>
-          <button onClick={() => fileInputRef.current.click()} className="nav-btn secondary btn-sm">Import</button>
-          <input type="file" ref={fileInputRef} className="hidden-input" accept=".json" onChange={handleFileChange} />
-          <button 
-            className="theme-toggle" 
-            onClick={toggleTheme}
-            aria-label={theme === 'light' ? "Switch to dark mode" : "Switch to light mode"}
-          >
-            {theme === 'light' ? '🌙' : '☀️'}
-          </button>
-          <button onClick={onNewSession} className="nav-btn primary btn-new-session">
-            New Session
-          </button>
-        </div>
-      </div>
-
-      <InfoSection defaultExpanded={entries.length === 0} />
-      
+    <div className="journal">
       {entries.length === 0 ? (
         <div className="empty-state">
           <p>No sessions recorded yet.</p>
@@ -130,7 +81,7 @@ const Dashboard = ({ entries, onNewSession, onViewEntry, onDeleteEntry, onImport
         </div>
       ) : (
         <>
-          <div className="dashboard-controls">
+          <div className="journal-controls">
             <button 
               onClick={() => setShowFilters(!showFilters)}
               className="nav-btn secondary btn-filter"
@@ -220,13 +171,13 @@ const Dashboard = ({ entries, onNewSession, onViewEntry, onDeleteEntry, onImport
             </div>
           )}
 
-          <div className="dashboard-list">
+          <div className="journal-list">
             {processedEntries.length === 0 ? (
               <div className="no-results">
                 No entries match your filters.
               </div>
             ) : processedEntries.map(entry => (
-            <div key={entry.id} className="dashboard-card" onClick={() => onViewEntry(entry)}>
+            <Card key={entry.id} className="journal-card" onClick={() => onViewEntry(entry)}>
               <div className="card-header">
                 <span className="card-date">{new Date(entry.id).toLocaleDateString()}</span>
                 <button 
@@ -285,7 +236,7 @@ const Dashboard = ({ entries, onNewSession, onViewEntry, onDeleteEntry, onImport
                   );
                 })}
               </div>
-            </div>
+            </Card>
           ))}
           </div>
         </>
@@ -294,4 +245,4 @@ const Dashboard = ({ entries, onNewSession, onViewEntry, onDeleteEntry, onImport
   );
 };
 
-export default Dashboard;
+export default Journal;

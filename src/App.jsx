@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import QuestionStep from './components/QuestionStep';
 import MultiSelectStep from './components/MultiSelectStep';
-import Dashboard from './components/Dashboard';
+import Journal from './components/Journal';
 import SessionDetails from './components/SessionDetails';
+import Analytics from './components/Analytics';
+import Header from './components/Header';
 import ErrorBoundary from './components/ErrorBoundary';
 import { THINKING_ERRORS } from './constants/thinkingErrors';
 import { COGNITIVE_DISTORTIONS } from './constants/cognitiveDisorders';
@@ -14,11 +16,12 @@ function AppContent() {
   const [history, setHistory] = useLocalStorage('socratic_history', []);
   const [lastBackup, setLastBackup] = useLocalStorage('socratic_last_backup', null);
   const [theme, setTheme] = useLocalStorage('socratic_theme', 'light');
-  const [view, setView] = useState('dashboard'); // 'dashboard' | 'wizard'
+  const [view, setView] = useState('journal'); // 'journal' | 'wizard' | 'analytics'
   const [selectedEntry, setSelectedEntry] = useState(null);
   const [step, setStep] = useState(1);
   const [isGenerating, setIsGenerating] = useState(false);
-  const [session, setSession] = useState({
+
+  const initialSessionState = {
     thought: '',
     selectedErrors: [],
     selectedDistortions: [],
@@ -28,7 +31,9 @@ function AppContent() {
     alternativeInterpretations: '',
     habitOrPast: '',
     likelihoodVsPossibility: ''
-  });
+  };
+
+  const [session, setSession] = useState(initialSessionState);
 
   const totalSteps = 6;
 
@@ -37,17 +42,7 @@ function AppContent() {
   }, [theme]);
 
   const startNewSession = () => {
-    setSession({
-      thought: '',
-      selectedErrors: [],
-      selectedDistortions: [],
-      evidenceFor: '',
-      evidenceAgainst: '',
-      feelingsVsFacts: '',
-      alternativeInterpretations: '',
-      habitOrPast: '',
-      likelihoodVsPossibility: ''
-    });
+    setSession(initialSessionState);
     setStep(1);
     setView('wizard');
   };
@@ -78,19 +73,9 @@ function AppContent() {
       id: Date.now()
     };
     setHistory([...history, newEntry]);
-    setSession({
-      thought: '',
-      selectedErrors: [],
-      selectedDistortions: [],
-      evidenceFor: '',
-      evidenceAgainst: '',
-      feelingsVsFacts: '',
-      alternativeInterpretations: '',
-      habitOrPast: '',
-      likelihoodVsPossibility: ''
-    });
+    setSession(initialSessionState);
     setStep(1);
-    setView('dashboard');
+    setView('journal');
     setSelectedEntry(newEntry);
     setIsGenerating(false);
   };
@@ -98,6 +83,14 @@ function AppContent() {
   const deleteEntry = (id) => {
     if (window.confirm('Are you sure you want to delete this session?')) {
       setHistory(history.filter(h => h.id !== id));
+    }
+  };
+
+  const cancelSession = () => {
+    if (window.confirm('Are you sure you want to cancel? All progress in this session will be lost.')) {
+      setSession(initialSessionState);
+      setStep(1);
+      setView('journal');
     }
   };
 
@@ -132,21 +125,41 @@ function AppContent() {
   const safeHistory = Array.isArray(history) ? history : [];
 
   return (
-    <div className="app-container">
-      {view === 'dashboard' ? (
-        <Dashboard 
+    <div className="app-wrapper">
+      {view !== 'wizard' && (
+        <Header 
           entries={safeHistory} 
           onNewSession={startNewSession} 
-          onViewEntry={setSelectedEntry} 
-          onDeleteEntry={deleteEntry}
           onImport={handleImport}
           lastBackup={lastBackup}
           onRecordBackup={() => setLastBackup(Date.now())}
           theme={theme}
           toggleTheme={toggleTheme}
+          onViewAnalytics={() => setView('analytics')}
+          view={view}
+          onViewJournal={() => setView('journal')}
         />
+      )}
+      <div className="app-container">
+      {view === 'journal' ? (
+        <Journal 
+          entries={safeHistory} 
+          onViewEntry={setSelectedEntry} 
+          onDeleteEntry={deleteEntry}
+        />
+      ) : view === 'analytics' ? (
+        <Analytics entries={safeHistory} />
       ) : (
         <>
+          <button 
+            onClick={cancelSession}
+            className="close-btn"
+            style={{ position: 'absolute', top: '1.5rem', right: '1.5rem' }}
+            aria-label="Cancel session"
+            title="Cancel session"
+          >
+            &times;
+          </button>
           <h1 className="app-title">
             Socratic Restructuring 
             <span style={{fontSize: '0.5em', color: '#6b7280', fontWeight: 'normal', marginLeft: '10px'}}>
@@ -256,7 +269,7 @@ function AppContent() {
             {step > 1 ? (
               <button onClick={prevStep} className="nav-btn secondary">Back</button>
             ) : (
-              <button onClick={() => setView('dashboard')} className="nav-btn secondary">Cancel</button>
+              <button onClick={() => setView('journal')} className="nav-btn secondary">Cancel</button>
             )}
             {step < totalSteps ? (
               <button onClick={nextStep} className="nav-btn primary">Next</button>
@@ -275,6 +288,7 @@ function AppContent() {
           onClose={() => setSelectedEntry(null)} 
         />
       )}
+    </div>
     </div>
   );
 }
