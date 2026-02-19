@@ -6,7 +6,7 @@ import { THINKING_ERRORS } from '../constants/thinkingErrors';
 import { COGNITIVE_DISTORTIONS } from '../constants/cognitiveDisorders';
 import Card from './Card';
 
-const Analytics = ({ entries, onBack }) => {
+const Analytics = ({ entries }) => {
   const stats = useMemo(() => {
     const distortionCounts = {};
     const errorCounts = {};
@@ -81,11 +81,6 @@ const Analytics = ({ entries, onBack }) => {
 
   return (
     <div className="analytics-view">
-      <div className="dashboard-header">
-        <h1 className="app-title dashboard-title">Insights & Analytics</h1>
-        <button onClick={onBack} className="nav-btn secondary btn-auto">Back to Dashboard</button>
-      </div>
-
       <div className="analytics-grid">
         <Card title="Total Sessions">
           <div className="stat-big">{stats.totalSessions}</div>
@@ -124,9 +119,18 @@ const Analytics = ({ entries, onBack }) => {
               <ResponsiveContainer>
                 <LineChart data={stats.chartData} margin={{ top: 5, right: 20, bottom: 5, left: 0 }}>
                   <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
-                  <XAxis dataKey="date" stroke="var(--text-secondary)" fontSize={12} />
+                  <XAxis 
+                    dataKey="timestamp" 
+                    stroke="var(--text-secondary)" 
+                    fontSize={12} 
+                    tickFormatter={(val) => new Date(val).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
+                  />
                   <YAxis domain={[0, 100]} stroke="var(--text-secondary)" fontSize={12} />
-                  <Tooltip contentStyle={{ backgroundColor: 'var(--surface)', borderColor: 'var(--border)', color: 'var(--text)' }} itemStyle={{ color: 'var(--text)' }} />
+                  <Tooltip 
+                    labelFormatter={(val) => new Date(val).toLocaleString(undefined, { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })}
+                    contentStyle={{ backgroundColor: 'var(--surface)', borderColor: 'var(--border)', color: 'var(--text)' }} 
+                    itemStyle={{ color: 'var(--text)' }} 
+                  />
                   <Legend />
                   <Line type="monotone" dataKey="intensity" stroke="#f59e0b" fill="none" name="Intensity" strokeWidth={2} activeDot={{ r: 6 }} dot={{ r: 4 }} />
                   <Line type="monotone" dataKey="efficacy" stroke="#059669" fill="none" name="Efficacy" strokeWidth={2} activeDot={{ r: 6 }} dot={{ r: 4 }} />
