@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
 import { THINKING_ERRORS } from '../constants/thinkingErrors';
 import { COGNITIVE_DISTORTIONS } from '../constants/cognitiveDisorders';
 import Tooltip from './Tooltip';
@@ -7,6 +7,14 @@ import { exportData } from '../utils';
 
 const Dashboard = ({ entries, onNewSession, onViewEntry, onDeleteEntry, onImport, lastBackup, onRecordBackup }) => {
   const fileInputRef = useRef(null);
+  const [sortBy, setSortBy] = useState('dateDesc');
+  const [showFilters, setShowFilters] = useState(false);
+  const [filters, setFilters] = useState({
+    errors: [],
+    distortions: [],
+    intensity: 'all',
+    efficacy: 'all'
+  });
 
   const handleBackup = () => {
     exportData(entries);
@@ -27,23 +35,80 @@ const Dashboard = ({ entries, onNewSession, onViewEntry, onDeleteEntry, onImport
     ? `Last backup: ${new Date(lastBackup).toLocaleString()}` 
     : "No backups yet";
 
+  const toggleFilter = (category, id) => {
+    setFilters(prev => {
+      const current = prev[category];
+      return {
+        ...prev,
+        [category]: current.includes(id) 
+          ? current.filter(item => item !== id)
+          : [...current, id]
+      };
+    });
+  };
+
+  const getProcessedEntries = () => {
+    let result = [...entries];
+
+    // Apply Filters
+    if (filters.errors.length > 0) {
+      result = result.filter(e => e.selectedErrors?.some(id => filters.errors.includes(id)));
+    }
+    if (filters.distortions.length > 0) {
+      result = result.filter(e => e.selectedDistortions?.some(id => filters.distortions.includes(id)));
+    }
+    if (filters.intensity !== 'all') {
+      result = result.filter(e => {
+        const score = e.aiScores?.intensity || 0;
+        return filters.intensity === 'high' ? score >= 50 : score < 50;
+      });
+    }
+    if (filters.efficacy !== 'all') {
+      result = result.filter(e => {
+        const score = e.aiScores?.efficacy || 0;
+        return filters.efficacy === 'high' ? score >= 50 : score < 50;
+      });
+    }
+
+    // Apply Sort
+    return result.sort((a, b) => {
+      switch (sortBy) {
+        case 'dateAsc':
+          return a.id - b.id;
+        case 'dateDesc':
+          return b.id - a.id;
+        case 'intensityDesc':
+          return (b.aiScores?.intensity || 0) - (a.aiScores?.intensity || 0);
+        case 'intensityAsc':
+          return (a.aiScores?.intensity || 0) - (b.aiScores?.intensity || 0);
+        case 'efficacyDesc':
+          return (b.aiScores?.efficacy || 0) - (a.aiScores?.efficacy || 0);
+        case 'efficacyAsc':
+          return (a.aiScores?.efficacy || 0) - (b.aiScores?.efficacy || 0);
+        default:
+          return b.id - a.id;
+      }
+    });
+  };
+
+  const processedEntries = getProcessedEntries();
+
   return (
     <div className="dashboard">
       <div className="dashboard-header">
-        <h1 className="app-title" style={{ marginBottom: 0, border: 'none' }}>My Thoughts</h1>
-        <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+        <h1 className="app-title dashboard-title">My Thoughts</h1>
+        <div className="dashboard-actions">
           <Tooltip text={backupTooltip}>
             <button 
               onClick={handleBackup} 
-              className={`nav-btn secondary ${hasUnsavedChanges ? 'pulse-alert' : ''}`} 
-              style={{ width: 'auto', padding: '0.5rem 1rem', fontSize: '0.8rem', display: 'flex', alignItems: 'center', gap: '0.25rem' }}
+              className={`nav-btn secondary btn-sm btn-backup ${hasUnsavedChanges ? 'pulse-alert' : ''}`} 
             >
               {hasUnsavedChanges && <span>⚠️</span>} Backup
             </button>
           </Tooltip>
-          <button onClick={() => fileInputRef.current.click()} className="nav-btn secondary" style={{ width: 'auto', padding: '0.5rem 1rem', fontSize: '0.8rem' }}>Import</button>
-          <input type="file" ref={fileInputRef} style={{ display: 'none' }} accept=".json" onChange={handleFileChange} />
-          <button onClick={onNewSession} className="nav-btn primary" style={{ width: 'auto', padding: '0.75rem 1.5rem', flex: 'none' }}>
+          <button onClick={() => fileInputRef.current.click()} className="nav-btn secondary btn-sm">Import</button>
+          <input type="file" ref={fileInputRef} className="hidden-input" accept=".json" onChange={handleFileChange} />
+          <button onClick={onNewSession} className="nav-btn primary btn-new-session">
             New Session
           </button>
         </div>
@@ -54,11 +119,106 @@ const Dashboard = ({ entries, onNewSession, onViewEntry, onDeleteEntry, onImport
       {entries.length === 0 ? (
         <div className="empty-state">
           <p>No sessions recorded yet.</p>
-          <p style={{ fontSize: '0.9rem', color: 'var(--text-secondary)' }}>Start a new session to begin restructuring your thoughts.</p>
+          <p className="empty-state-text">Start a new session to begin restructuring your thoughts.</p>
         </div>
       ) : (
-        <div className="dashboard-list">
-          {entries.slice().reverse().map(entry => (
+        <>
+          <div className="dashboard-controls">
+            <button 
+              onClick={() => setShowFilters(!showFilters)}
+              className="nav-btn secondary btn-filter"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon></svg>
+              {showFilters ? 'Hide Filters' : 'Filter'}
+              {(filters.errors.length > 0 || filters.distortions.length > 0 || filters.intensity !== 'all' || filters.efficacy !== 'all') && (
+                <span className="filter-badge">
+                  {filters.errors.length + filters.distortions.length + (filters.intensity !== 'all' ? 1 : 0) + (filters.efficacy !== 'all' ? 1 : 0)}
+                </span>
+              )}
+            </button>
+
+            <select 
+              value={sortBy} 
+              onChange={(e) => setSortBy(e.target.value)}
+              className="sort-select"
+            >
+              <option value="dateDesc">Date: Newest First</option>
+              <option value="dateAsc">Date: Oldest First</option>
+              <option value="intensityDesc">Intensity: High to Low</option>
+              <option value="intensityAsc">Intensity: Low to High</option>
+              <option value="efficacyDesc">Efficacy: High to Low</option>
+              <option value="efficacyAsc">Efficacy: Low to High</option>
+            </select>
+          </div>
+
+          {showFilters && (
+            <div className="filter-panel">
+              <div className="filter-header">
+                <h3 className="filter-title">Filters</h3>
+                <button 
+                  onClick={() => setFilters({ errors: [], distortions: [], intensity: 'all', efficacy: 'all' })}
+                  className="btn-clear-filters"
+                >
+                  Clear all
+                </button>
+              </div>
+
+              <div className="filter-grid">
+                <div>
+                  <label className="filter-section-label">Thinking Errors</label>
+                  <div className="filter-tags">
+                    {THINKING_ERRORS.map(err => (
+                      <button
+                        key={err.id}
+                        onClick={() => toggleFilter('errors', err.id)}
+                        className={`filter-tag ${filters.errors.includes(err.id) ? 'active' : ''}`}
+                      >
+                        {err.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div>
+                  <label className="filter-section-label">Cognitive Distortions</label>
+                  <div className="filter-tags">
+                    {COGNITIVE_DISTORTIONS.map(dist => (
+                      <button
+                        key={dist.id}
+                        onClick={() => toggleFilter('distortions', dist.id)}
+                        className={`filter-tag ${filters.distortions.includes(dist.id) ? 'active' : ''}`}
+                      >
+                        {dist.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div>
+                  <label className="filter-section-label">Scores</label>
+                  <div className="filter-scores">
+                    <select value={filters.intensity} onChange={(e) => setFilters({...filters, intensity: e.target.value})} className="score-select">
+                      <option value="all">Intensity: Any</option>
+                      <option value="high">High Intensity (50+)</option>
+                      <option value="low">Low Intensity (&lt;50)</option>
+                    </select>
+                    <select value={filters.efficacy} onChange={(e) => setFilters({...filters, efficacy: e.target.value})} className="score-select">
+                      <option value="all">Efficacy: Any</option>
+                      <option value="high">High Efficacy (50+)</option>
+                      <option value="low">Low Efficacy (&lt;50)</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          <div className="dashboard-list">
+            {processedEntries.length === 0 ? (
+              <div className="no-results">
+                No entries match your filters.
+              </div>
+            ) : processedEntries.map(entry => (
             <div key={entry.id} className="dashboard-card" onClick={() => onViewEntry(entry)}>
               <div className="card-header">
                 <span className="card-date">{new Date(entry.id).toLocaleDateString()}</span>
@@ -79,28 +239,25 @@ const Dashboard = ({ entries, onNewSession, onViewEntry, onDeleteEntry, onImport
               <div className="card-thought">{entry.thought}</div>
               
               {entry.aiBalancedThought && (
-                <div style={{ marginTop: '0.75rem', paddingLeft: '0.75rem', borderLeft: '3px solid #10b981', fontSize: '0.9rem', color: '#374151' }}>
+                <div className="balanced-thought-preview">
                   <div dangerouslySetInnerHTML={{ __html: entry.aiBalancedThought }} />
                 </div>
               )}
 
               {entry.aiScores && (
-                <div style={{ display: 'flex', gap: '1rem', marginTop: '0.5rem', fontSize: '0.8rem', color: '#6b7280' }}>
+                <div className="scores-preview">
                   <span>Intensity: <b>{entry.aiScores.intensity}</b></span>
                   <span>Efficacy: <b>{entry.aiScores.efficacy}</b></span>
                 </div>
               )}
 
-              <div style={{ display: 'flex', gap: '6px', marginTop: '12px', flexWrap: 'wrap' }}>
+              <div className="tags-preview">
                 {entry.selectedErrors && entry.selectedErrors.map(id => {
                   const item = THINKING_ERRORS.find(e => e.id === id);
                   if (!item) return null;
                   return (
                     <Tooltip key={id} text={item.label}>
-                      <div style={{
-                        width: '12px',
-                        height: '12px',
-                        borderRadius: '50%',
+                      <div className="dot-indicator dot-error" style={{
                         backgroundColor: item.color?.background || '#e5e7eb',
                         border: `1px solid ${item.color?.text || '#9ca3af'}`
                       }} />
@@ -113,9 +270,7 @@ const Dashboard = ({ entries, onNewSession, onViewEntry, onDeleteEntry, onImport
                   if (!item) return null;
                   return (
                     <Tooltip key={id} text={item.label}>
-                      <div style={{
-                        width: '12px',
-                        height: '12px',
+                      <div className="dot-indicator dot-distortion" style={{
                         backgroundColor: item.color?.background || '#e5e7eb',
                         border: `1px solid ${item.color?.text || '#9ca3af'}`
                       }} />
@@ -125,7 +280,8 @@ const Dashboard = ({ entries, onNewSession, onViewEntry, onDeleteEntry, onImport
               </div>
             </div>
           ))}
-        </div>
+          </div>
+        </>
       )}
     </div>
   );
