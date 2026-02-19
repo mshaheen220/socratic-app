@@ -5,7 +5,7 @@ import Tooltip from './Tooltip';
 import InfoSection from './InfoSection';
 import { exportData } from '../utils';
 
-const Dashboard = ({ entries, onNewSession, onViewEntry, onDeleteEntry, onImport, lastBackup, onRecordBackup }) => {
+const Dashboard = ({ entries, onNewSession, onViewEntry, onDeleteEntry, onImport, lastBackup, onRecordBackup, theme, toggleTheme }) => {
   const fileInputRef = useRef(null);
   const [sortBy, setSortBy] = useState('dateDesc');
   const [showFilters, setShowFilters] = useState(false);
@@ -108,6 +108,13 @@ const Dashboard = ({ entries, onNewSession, onViewEntry, onDeleteEntry, onImport
           </Tooltip>
           <button onClick={() => fileInputRef.current.click()} className="nav-btn secondary btn-sm">Import</button>
           <input type="file" ref={fileInputRef} className="hidden-input" accept=".json" onChange={handleFileChange} />
+          <button 
+            className="theme-toggle" 
+            onClick={toggleTheme}
+            aria-label={theme === 'light' ? "Switch to dark mode" : "Switch to light mode"}
+          >
+            {theme === 'light' ? '🌙' : '☀️'}
+          </button>
           <button onClick={onNewSession} className="nav-btn primary btn-new-session">
             New Session
           </button>
@@ -258,8 +265,8 @@ const Dashboard = ({ entries, onNewSession, onViewEntry, onDeleteEntry, onImport
                   return (
                     <Tooltip key={id} text={item.label}>
                       <div className="dot-indicator dot-error" style={{
-                        backgroundColor: item.color?.background || '#e5e7eb',
-                        border: `1px solid ${item.color?.text || '#9ca3af'}`
+                        backgroundColor: item.color?.background || 'var(--border)',
+                        border: `1px solid ${item.color?.text || 'var(--gray-400)'}`
                       }} />
                     </Tooltip>
                   );
@@ -271,8 +278,8 @@ const Dashboard = ({ entries, onNewSession, onViewEntry, onDeleteEntry, onImport
                   return (
                     <Tooltip key={id} text={item.label}>
                       <div className="dot-indicator dot-distortion" style={{
-                        backgroundColor: item.color?.background || '#e5e7eb',
-                        border: `1px solid ${item.color?.text || '#9ca3af'}`
+                        backgroundColor: item.color?.background || 'var(--border)',
+                        border: `1px solid ${item.color?.text || 'var(--gray-400)'}`
                       }} />
                     </Tooltip>
                   );

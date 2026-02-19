@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import QuestionStep from './components/QuestionStep';
 import MultiSelectStep from './components/MultiSelectStep';
 import Dashboard from './components/Dashboard';
@@ -12,6 +12,7 @@ import { importData } from './utils';
 export default function App() {
   const [history, setHistory] = useLocalStorage('socratic_history', []);
   const [lastBackup, setLastBackup] = useLocalStorage('socratic_last_backup', null);
+  const [theme, setTheme] = useLocalStorage('socratic_theme', 'light');
   const [view, setView] = useState('dashboard'); // 'dashboard' | 'wizard'
   const [selectedEntry, setSelectedEntry] = useState(null);
   const [step, setStep] = useState(1);
@@ -29,6 +30,10 @@ export default function App() {
   });
 
   const totalSteps = 6;
+
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', theme);
+  }, [theme]);
 
   const startNewSession = () => {
     setSession({
@@ -118,6 +123,10 @@ export default function App() {
     }
   };
 
+  const toggleTheme = () => {
+    setTheme(prev => prev === 'light' ? 'dark' : 'light');
+  };
+
   return (
     <div className="app-container">
       {view === 'dashboard' ? (
@@ -129,6 +138,8 @@ export default function App() {
           onImport={handleImport}
           lastBackup={lastBackup}
           onRecordBackup={() => setLastBackup(Date.now())}
+          theme={theme}
+          toggleTheme={toggleTheme}
         />
       ) : (
         <>
