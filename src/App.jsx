@@ -3,13 +3,14 @@ import QuestionStep from './components/QuestionStep';
 import MultiSelectStep from './components/MultiSelectStep';
 import Dashboard from './components/Dashboard';
 import SessionDetails from './components/SessionDetails';
+import ErrorBoundary from './components/ErrorBoundary';
 import { THINKING_ERRORS } from './constants/thinkingErrors';
 import { COGNITIVE_DISTORTIONS } from './constants/cognitiveDisorders';
 import { generateSessionInsight } from './services/gemini';
 import { useLocalStorage } from './hooks/useLocalStorage';
 import { importData } from './utils';
 
-export default function App() {
+function AppContent() {
   const [history, setHistory] = useLocalStorage('socratic_history', []);
   const [lastBackup, setLastBackup] = useLocalStorage('socratic_last_backup', null);
   const [theme, setTheme] = useLocalStorage('socratic_theme', 'light');
@@ -127,11 +128,14 @@ export default function App() {
     setTheme(prev => prev === 'light' ? 'dark' : 'light');
   };
 
+  // Ensure history is an array to prevent crashes if local storage is corrupted
+  const safeHistory = Array.isArray(history) ? history : [];
+
   return (
     <div className="app-container">
       {view === 'dashboard' ? (
         <Dashboard 
-          entries={history} 
+          entries={safeHistory} 
           onNewSession={startNewSession} 
           onViewEntry={setSelectedEntry} 
           onDeleteEntry={deleteEntry}
@@ -272,5 +276,13 @@ export default function App() {
         />
       )}
     </div>
+  );
+}
+
+export default function App() {
+  return (
+    <ErrorBoundary>
+      <AppContent />
+    </ErrorBoundary>
   );
 }
