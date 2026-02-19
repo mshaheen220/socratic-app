@@ -2,8 +2,10 @@ import React from 'react';
 import { THINKING_ERRORS } from '../constants/thinkingErrors';
 import { COGNITIVE_DISTORTIONS } from '../constants/cognitiveDisorders';
 import Tooltip from './Tooltip';
+import InfoSection from './InfoSection';
 
 const Dashboard = ({ entries, onNewSession, onViewEntry, onDeleteEntry }) => {
+
   return (
     <div className="dashboard">
       <div className="dashboard-header">
@@ -12,6 +14,8 @@ const Dashboard = ({ entries, onNewSession, onViewEntry, onDeleteEntry }) => {
           New Session
         </button>
       </div>
+
+      <InfoSection />
       
       {entries.length === 0 ? (
         <div className="empty-state">
