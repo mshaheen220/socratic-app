@@ -42,20 +42,27 @@ const Header = ({
         <div className="journal-header">
           <h1 className="app-title journal-title">My Thoughts</h1>
           <div className="journal-actions">
-            {view === 'analytics' ? (
-              <button onClick={onViewJournal} className="nav-btn secondary btn-sm">Journal</button>
-            ) : (
-              <button onClick={onViewAnalytics} className="nav-btn secondary btn-sm">Analytics</button>
-            )}
+            <button 
+              onClick={onViewJournal} 
+              className={`nav-btn btn-sm ${view === 'journal' ? 'primary' : 'secondary'}`}
+            >
+              Journal
+            </button>
+            <button 
+              onClick={onViewAnalytics} 
+              className={`nav-btn btn-sm ${view === 'analytics' ? 'primary' : 'secondary'}`}
+            >
+              Analytics
+            </button>
             <Tooltip text={backupTooltip}>
               <button 
                 onClick={handleBackup} 
                 className={`nav-btn secondary btn-sm btn-backup ${hasUnsavedChanges ? 'pulse-alert' : ''}`} 
               >
-                {hasUnsavedChanges && <span>⚠️</span>} Backup
+                {hasUnsavedChanges && <span>⚠️</span>} 💾 Backup
               </button>
             </Tooltip>
-            <button onClick={() => fileInputRef.current.click()} className="nav-btn secondary btn-sm">Import</button>
+            <button onClick={() => fileInputRef.current.click()} className="nav-btn secondary btn-sm">📥 Import</button>
             <input type="file" ref={fileInputRef} className="hidden-input" accept=".json" onChange={handleFileChange} />
             <button 
               className="theme-toggle" 
