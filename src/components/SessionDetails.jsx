@@ -37,7 +37,42 @@ const SessionDetails = ({ session, onClose }) => {
             <p className="highlight-text">{session.thought}</p>
           </div>
 
-          {session.aiInsight && (
+          {(session.aiSummary || session.aiBalancedThought || session.aiScores) ? (
+            <div className="detail-group" style={{ background: '#f0f9ff', padding: '1rem', borderRadius: '8px' }}>
+              <h3 style={{ color: '#0369a1', marginTop: 0, fontSize: '1.1rem' }}>AI Analysis</h3>
+              
+              {session.aiSummary && (
+                <div style={{ marginBottom: '1rem' }}>
+                  <label style={{ color: '#0369a1', fontSize: '0.9em', display: 'block', marginBottom: '0.25rem' }}>Summary</label>
+                  <div dangerouslySetInnerHTML={{ __html: session.aiSummary }} />
+                </div>
+              )}
+
+              {session.aiBalancedThought && (
+                <div style={{ marginBottom: '1rem' }}>
+                  <label style={{ color: '#0369a1', fontSize: '0.9em', display: 'block', marginBottom: '0.25rem' }}>Balanced Thought</label>
+                  <div dangerouslySetInnerHTML={{ __html: session.aiBalancedThought }} />
+                </div>
+              )}
+
+              {session.aiScores && (
+                <div>
+                  <label style={{ color: '#0369a1', fontSize: '0.9em', display: 'block', marginBottom: '0.25rem' }}>Scores</label>
+                  <div style={{ display: 'flex', gap: '1rem', marginBottom: '0.5rem' }}>
+                    <div style={{ background: 'white', padding: '0.25rem 0.5rem', borderRadius: '4px', fontSize: '0.9rem' }}>
+                      <strong>Intensity:</strong> {session.aiScores.intensity}
+                    </div>
+                    <div style={{ background: 'white', padding: '0.25rem 0.5rem', borderRadius: '4px', fontSize: '0.9rem' }}>
+                      <strong>Efficacy:</strong> {session.aiScores.efficacy}
+                    </div>
+                  </div>
+                  {session.aiScores.scoreExplanation && (
+                    <div style={{ fontSize: '0.9em', color: '#4b5563' }} dangerouslySetInnerHTML={{ __html: session.aiScores.scoreExplanation }} />
+                  )}
+                </div>
+              )}
+            </div>
+          ) : session.aiInsight && (
             <div className="detail-group" style={{ background: '#f0f9ff', padding: '1rem', borderRadius: '8px' }}>
               <label style={{ color: '#0369a1' }}>AI Insight</label>
               <div dangerouslySetInnerHTML={{ __html: session.aiInsight }} />

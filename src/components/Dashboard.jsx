@@ -40,6 +40,19 @@ const Dashboard = ({ entries, onNewSession, onViewEntry, onDeleteEntry }) => {
               </div>
               <div className="card-thought">{entry.thought}</div>
               
+              {entry.aiBalancedThought && (
+                <div style={{ marginTop: '0.75rem', paddingLeft: '0.75rem', borderLeft: '3px solid #10b981', fontSize: '0.9rem', color: '#374151' }}>
+                  <div dangerouslySetInnerHTML={{ __html: entry.aiBalancedThought }} />
+                </div>
+              )}
+
+              {entry.aiScores && (
+                <div style={{ display: 'flex', gap: '1rem', marginTop: '0.5rem', fontSize: '0.8rem', color: '#6b7280' }}>
+                  <span>Intensity: <b>{entry.aiScores.intensity}</b></span>
+                  <span>Efficacy: <b>{entry.aiScores.efficacy}</b></span>
+                </div>
+              )}
+
               <div style={{ display: 'flex', gap: '6px', marginTop: '12px', flexWrap: 'wrap' }}>
                 {entry.selectedErrors && entry.selectedErrors.map(id => {
                   const item = THINKING_ERRORS.find(e => e.id === id);

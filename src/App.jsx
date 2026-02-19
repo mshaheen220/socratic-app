@@ -23,8 +23,7 @@ export default function App() {
     feelingsVsFacts: '',
     alternativeInterpretations: '',
     habitOrPast: '',
-    likelihoodVsPossibility: '',
-    aiInsight: ''
+    likelihoodVsPossibility: ''
   });
 
   const totalSteps = 6;
@@ -39,8 +38,7 @@ export default function App() {
       feelingsVsFacts: '',
       alternativeInterpretations: '',
       habitOrPast: '',
-      likelihoodVsPossibility: '',
-      aiInsight: ''
+      likelihoodVsPossibility: ''
     });
     setStep(1);
     setView('wizard');
@@ -57,17 +55,20 @@ export default function App() {
     if (!session.thought) return alert("Identify a thought first!");
 
     setIsGenerating(true);
-    let insight = '';
-    let prompt = '';
+    let aiData = null;
     try {
-      const result = await generateSessionInsight(session);
-      insight = result.insight;
-      prompt = result.prompt;
+      aiData = await generateSessionInsight(session);
     } catch (e) {
       console.error(e);
     }
 
-    const newEntry = { ...session, aiInsight: insight, aiPrompt: prompt, id: Date.now() };
+    const newEntry = {
+      ...session,
+      aiSummary: aiData?.summary,
+      aiBalancedThought: aiData?.balancedThought,
+      aiScores: aiData?.scores,
+      id: Date.now()
+    };
     setHistory([...history, newEntry]);
     setSession({
       thought: '',
@@ -78,8 +79,7 @@ export default function App() {
       feelingsVsFacts: '',
       alternativeInterpretations: '',
       habitOrPast: '',
-      likelihoodVsPossibility: '',
-      aiInsight: ''
+      likelihoodVsPossibility: ''
     });
     setStep(1);
     setView('dashboard');
