@@ -3,6 +3,7 @@ import QuestionStep from './components/QuestionStep';
 import MultiSelectStep from './components/MultiSelectStep';
 import Dashboard from './components/Dashboard';
 import SessionDetails from './components/SessionDetails';
+import Analytics from './components/Analytics';
 import ErrorBoundary from './components/ErrorBoundary';
 import { THINKING_ERRORS } from './constants/thinkingErrors';
 import { COGNITIVE_DISTORTIONS } from './constants/cognitiveDisorders';
@@ -144,7 +145,10 @@ function AppContent() {
           onRecordBackup={() => setLastBackup(Date.now())}
           theme={theme}
           toggleTheme={toggleTheme}
+          onViewAnalytics={() => setView('analytics')}
         />
+      ) : view === 'analytics' ? (
+        <Analytics entries={safeHistory} onBack={() => setView('dashboard')} />
       ) : (
         <>
           <h1 className="app-title">

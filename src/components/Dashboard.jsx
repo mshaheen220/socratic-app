@@ -4,8 +4,9 @@ import { COGNITIVE_DISTORTIONS } from '../constants/cognitiveDisorders';
 import Tooltip from './Tooltip';
 import InfoSection from './InfoSection';
 import { exportData } from '../utils';
+import Card from './Card';
 
-const Dashboard = ({ entries, onNewSession, onViewEntry, onDeleteEntry, onImport, lastBackup, onRecordBackup, theme, toggleTheme }) => {
+const Dashboard = ({ entries, onNewSession, onViewEntry, onDeleteEntry, onImport, lastBackup, onRecordBackup, theme, toggleTheme, onViewAnalytics }) => {
   const fileInputRef = useRef(null);
   const [sortBy, setSortBy] = useState('dateDesc');
   const [showFilters, setShowFilters] = useState(false);
@@ -98,6 +99,7 @@ const Dashboard = ({ entries, onNewSession, onViewEntry, onDeleteEntry, onImport
       <div className="dashboard-header">
         <h1 className="app-title dashboard-title">My Thoughts</h1>
         <div className="dashboard-actions">
+          <button onClick={onViewAnalytics} className="nav-btn secondary btn-sm">Analytics</button>
           <Tooltip text={backupTooltip}>
             <button 
               onClick={handleBackup} 
@@ -226,7 +228,7 @@ const Dashboard = ({ entries, onNewSession, onViewEntry, onDeleteEntry, onImport
                 No entries match your filters.
               </div>
             ) : processedEntries.map(entry => (
-            <div key={entry.id} className="dashboard-card" onClick={() => onViewEntry(entry)}>
+            <Card key={entry.id} className="dashboard-card" onClick={() => onViewEntry(entry)}>
               <div className="card-header">
                 <span className="card-date">{new Date(entry.id).toLocaleDateString()}</span>
                 <button 
@@ -285,7 +287,7 @@ const Dashboard = ({ entries, onNewSession, onViewEntry, onDeleteEntry, onImport
                   );
                 })}
               </div>
-            </div>
+            </Card>
           ))}
           </div>
         </>
