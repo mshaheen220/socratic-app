@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 
-const InfoSection = () => {
-  const [showInfo, setShowInfo] = useState(false);
+const InfoSection = ({ defaultExpanded = false }) => {
+  const [showInfo, setShowInfo] = useState(defaultExpanded);
 
   return (
     <div className="info-section">

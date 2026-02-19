@@ -15,7 +15,7 @@ const Dashboard = ({ entries, onNewSession, onViewEntry, onDeleteEntry }) => {
         </button>
       </div>
 
-      <InfoSection />
+      <InfoSection defaultExpanded={entries.length === 0} />
       
       {entries.length === 0 ? (
         <div className="empty-state">
