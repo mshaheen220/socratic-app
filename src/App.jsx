@@ -7,9 +7,11 @@ import { THINKING_ERRORS } from './constants/thinkingErrors';
 import { COGNITIVE_DISTORTIONS } from './constants/cognitiveDisorders';
 import { generateSessionInsight } from './services/gemini';
 import { useLocalStorage } from './hooks/useLocalStorage';
+import { importData } from './utils';
 
 export default function App() {
   const [history, setHistory] = useLocalStorage('socratic_history', []);
+  const [lastBackup, setLastBackup] = useLocalStorage('socratic_last_backup', null);
   const [view, setView] = useState('dashboard'); // 'dashboard' | 'wizard'
   const [selectedEntry, setSelectedEntry] = useState(null);
   const [step, setStep] = useState(1);
@@ -93,6 +95,29 @@ export default function App() {
     }
   };
 
+  const handleImport = async (file) => {
+    if (!file) return;
+    try {
+      const data = await importData(file);
+      if (Array.isArray(data)) {
+        const existingIds = new Set(history.map(item => item.id));
+        const newItems = data.filter(item => !existingIds.has(item.id));
+        
+        if (newItems.length > 0) {
+          setHistory([...history, ...newItems]);
+          alert(`Successfully imported ${newItems.length} sessions.`);
+        } else {
+          alert('No new sessions found in backup.');
+        }
+      } else {
+        alert('Invalid backup file format.');
+      }
+    } catch (error) {
+      console.error('Import error:', error);
+      alert('Failed to import backup file.');
+    }
+  };
+
   return (
     <div className="app-container">
       {view === 'dashboard' ? (
@@ -101,6 +126,9 @@ export default function App() {
           onNewSession={startNewSession} 
           onViewEntry={setSelectedEntry} 
           onDeleteEntry={deleteEntry}
+          onImport={handleImport}
+          lastBackup={lastBackup}
+          onRecordBackup={() => setLastBackup(Date.now())}
         />
       ) : (
         <>

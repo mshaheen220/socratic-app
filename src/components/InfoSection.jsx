@@ -30,7 +30,7 @@ const InfoSection = ({ defaultExpanded = false }) => {
           <p>Use this whenever you feel overwhelmed, anxious, or stuck in a loop of negative thinking. It helps break the cycle by engaging your analytical mind.</p>
 
           <h4>Privacy & Data</h4>
-          <p>Your data is stored <strong>locally on your machine</strong>, so you don't need to worry about others seeing your submissions. Because of this, clearing your browser data may wipe out your history. A future version will allow for backups and restore.</p>
+          <p>Your data is stored <strong>locally on your machine</strong>, so you don't need to worry about others seeing your submissions. Because of this, clearing your browser data may wipe out your history. You can use the <strong>Backup</strong> and <strong>Import</strong> buttons to save your data to a file and restore it later.</p>
 
           <p className="info-footer"><em>Based on worksheets and concepts from <a href="https://www.therapistaid.com" target="_blank" rel="noopener noreferrer">TherapistAid.com</a>. AI analysis is generated using Google Gemini.</em></p>
         </div>

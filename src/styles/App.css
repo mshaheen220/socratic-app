@@ -427,3 +427,22 @@ textarea:focus {
 .info-footer a {
   color: #2563eb;
 }
+
+@keyframes pulse-alert {
+  0% {
+    box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.7);
+  }
+  70% {
+    box-shadow: 0 0 0 6px rgba(245, 158, 11, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(245, 158, 11, 0);
+  }
+}
+
+.nav-btn.pulse-alert {
+  animation: pulse-alert 2s infinite;
+  border: 1px solid #f59e0b;
+  color: #b45309;
+  background-color: #fffbeb;
+}
