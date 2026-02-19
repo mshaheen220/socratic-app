@@ -1,6 +1,7 @@
 import React from 'react';
 import { THINKING_ERRORS } from '../constants/thinkingErrors';
 import { COGNITIVE_DISTORTIONS } from '../constants/cognitiveDisorders';
+import Tooltip from './Tooltip';
 
 const SessionDetails = ({ session, onClose }) => {
   if (!session) return null;
@@ -50,7 +51,11 @@ const SessionDetails = ({ session, onClose }) => {
                 session.selectedErrors.map(id => {
                   const error = THINKING_ERRORS.find(e => e.id === id);
                   const style = error?.color ? { backgroundColor: error.color.background, color: error.color.text } : {};
-                  return <span key={id} className="tag" style={style}>{error?.label || id}</span>;
+                  return (
+                    <Tooltip key={id} text={error?.description}>
+                      <span className="tag" style={style}>{error?.label || id}</span>
+                    </Tooltip>
+                  );
                 })
               ) : (
                 <p>None identified</p>
@@ -65,7 +70,11 @@ const SessionDetails = ({ session, onClose }) => {
                 session.selectedDistortions.map(id => {
                   const distortion = COGNITIVE_DISTORTIONS.find(d => d.id === id);
                   const style = distortion?.color ? { backgroundColor: distortion.color.background, color: distortion.color.text } : {};
-                  return <span key={id} className="tag" style={style}>{distortion?.label || id}</span>;
+                  return (
+                    <Tooltip key={id} text={distortion?.description}>
+                      <span className="tag" style={style}>{distortion?.label || id}</span>
+                    </Tooltip>
+                  );
                 })
               ) : (
                 <p>None identified</p>

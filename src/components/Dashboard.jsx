@@ -1,4 +1,7 @@
 import React from 'react';
+import { THINKING_ERRORS } from '../constants/thinkingErrors';
+import { COGNITIVE_DISTORTIONS } from '../constants/cognitiveDisorders';
+import Tooltip from './Tooltip';
 
 const Dashboard = ({ entries, onNewSession, onViewEntry, onDeleteEntry }) => {
   return (
@@ -36,6 +39,39 @@ const Dashboard = ({ entries, onNewSession, onViewEntry, onDeleteEntry }) => {
                 </button>
               </div>
               <div className="card-thought">{entry.thought}</div>
+              
+              <div style={{ display: 'flex', gap: '6px', marginTop: '12px', flexWrap: 'wrap' }}>
+                {entry.selectedErrors && entry.selectedErrors.map(id => {
+                  const item = THINKING_ERRORS.find(e => e.id === id);
+                  if (!item) return null;
+                  return (
+                    <Tooltip key={id} text={item.label}>
+                      <div style={{
+                        width: '12px',
+                        height: '12px',
+                        borderRadius: '50%',
+                        backgroundColor: item.color?.background || '#e5e7eb',
+                        border: `1px solid ${item.color?.text || '#9ca3af'}`
+                      }} />
+                    </Tooltip>
+                  );
+                })}
+                
+                {entry.selectedDistortions && entry.selectedDistortions.map(id => {
+                  const item = COGNITIVE_DISTORTIONS.find(d => d.id === id);
+                  if (!item) return null;
+                  return (
+                    <Tooltip key={id} text={item.label}>
+                      <div style={{
+                        width: '12px',
+                        height: '12px',
+                        backgroundColor: item.color?.background || '#e5e7eb',
+                        border: `1px solid ${item.color?.text || '#9ca3af'}`
+                      }} />
+                    </Tooltip>
+                  );
+                })}
+              </div>
             </div>
           ))}
         </div>
