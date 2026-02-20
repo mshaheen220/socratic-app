@@ -32,7 +32,7 @@ const InfoSection = ({ defaultExpanded = false }) => {
           <h4>Privacy & Data</h4>
           <p>Your data is stored <strong>locally on your machine</strong>, so you don't need to worry about others seeing your submissions. Because of this, clearing your browser data may wipe out your history. You can use the <strong>Backup</strong> and <strong>Import</strong> buttons to save your data to a file and restore it later.</p>
 
-          <p className="info-footer"><em>Based on worksheets and concepts from <a href="https://www.therapistaid.com" target="_blank" rel="noopener noreferrer">TherapistAid.com</a>. AI analysis is generated using Google Gemini.</em></p>
+          <p className="info-footer"><em>Based on worksheets and concepts from <a href="https://www.therapistaid.com" target="_blank" rel="noopener noreferrer">TherapistAid.com</a>. AI analysis is generated using Google Gemini (gemini-2.5-flash-lite).</em></p>
         </div>
       )}
     </div>
