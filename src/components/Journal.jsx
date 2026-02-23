@@ -8,6 +8,7 @@ const Journal = ({ entries, onViewEntry, onDeleteEntry }) => {
   const [sortBy, setSortBy] = useState('dateDesc');
   const [showFilters, setShowFilters] = useState(false);
   const [filters, setFilters] = useState({
+    type: 'all',
     errors: [],
     distortions: [],
     intensity: 'all',
@@ -30,6 +31,9 @@ const Journal = ({ entries, onViewEntry, onDeleteEntry }) => {
     let result = [...entries];
 
     // Apply Filters
+    if (filters.type !== 'all') {
+      result = result.filter(e => (e.type || 'distortion') === filters.type);
+    }
     if (filters.errors.length > 0) {
       result = result.filter(e => e.selectedErrors?.some(id => filters.errors.includes(id)));
     }
@@ -44,7 +48,7 @@ const Journal = ({ entries, onViewEntry, onDeleteEntry }) => {
     }
     if (filters.efficacy !== 'all') {
       result = result.filter(e => {
-        const score = e.aiScores?.efficacy || 0;
+        const score = e.aiScores?.efficacy || e.aiScores?.resilience || 0;
         return filters.efficacy === 'high' ? score >= 50 : score < 50;
       });
     }
@@ -61,9 +65,9 @@ const Journal = ({ entries, onViewEntry, onDeleteEntry }) => {
         case 'intensityAsc':
           return (a.aiScores?.intensity || 0) - (b.aiScores?.intensity || 0);
         case 'efficacyDesc':
-          return (b.aiScores?.efficacy || 0) - (a.aiScores?.efficacy || 0);
+          return (b.aiScores?.efficacy || b.aiScores?.resilience || 0) - (a.aiScores?.efficacy || a.aiScores?.resilience || 0);
         case 'efficacyAsc':
-          return (a.aiScores?.efficacy || 0) - (b.aiScores?.efficacy || 0);
+          return (a.aiScores?.efficacy || a.aiScores?.resilience || 0) - (b.aiScores?.efficacy || b.aiScores?.resilience || 0);
         default:
           return b.id - a.id;
       }
@@ -71,6 +75,9 @@ const Journal = ({ entries, onViewEntry, onDeleteEntry }) => {
   };
 
   const processedEntries = getProcessedEntries();
+  
+  const showDistortionFilters = filters.type === 'all' || filters.type === 'distortion';
+  const efficacyLabel = filters.type === 'stressor' ? 'Resilience' : (filters.type === 'distortion' ? 'Efficacy' : 'Efficacy / Resilience');
 
   return (
     <div className="journal">
@@ -88,9 +95,9 @@ const Journal = ({ entries, onViewEntry, onDeleteEntry }) => {
             >
               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon></svg>
               {showFilters ? 'Hide Filters' : 'Filter'}
-              {(filters.errors.length > 0 || filters.distortions.length > 0 || filters.intensity !== 'all' || filters.efficacy !== 'all') && (
+              {(filters.type !== 'all' || filters.errors.length > 0 || filters.distortions.length > 0 || filters.intensity !== 'all' || filters.efficacy !== 'all') && (
                 <span className="filter-badge">
-                  {filters.errors.length + filters.distortions.length + (filters.intensity !== 'all' ? 1 : 0) + (filters.efficacy !== 'all' ? 1 : 0)}
+                  {(filters.type !== 'all' ? 1 : 0) + filters.errors.length + filters.distortions.length + (filters.intensity !== 'all' ? 1 : 0) + (filters.efficacy !== 'all' ? 1 : 0)}
                 </span>
               )}
             </button>
@@ -104,8 +111,8 @@ const Journal = ({ entries, onViewEntry, onDeleteEntry }) => {
               <option value="dateAsc">Date: Oldest First</option>
               <option value="intensityDesc">Intensity: High to Low</option>
               <option value="intensityAsc">Intensity: Low to High</option>
-              <option value="efficacyDesc">Efficacy: High to Low</option>
-              <option value="efficacyAsc">Efficacy: Low to High</option>
+              <option value="efficacyDesc">{efficacyLabel}: High to Low</option>
+              <option value="efficacyAsc">{efficacyLabel}: Low to High</option>
             </select>
           </div>
 
@@ -114,7 +121,7 @@ const Journal = ({ entries, onViewEntry, onDeleteEntry }) => {
               <div className="filter-header">
                 <h3 className="filter-title">Filters</h3>
                 <button 
-                  onClick={() => setFilters({ errors: [], distortions: [], intensity: 'all', efficacy: 'all' })}
+                  onClick={() => setFilters({ type: 'all', errors: [], distortions: [], intensity: 'all', efficacy: 'all' })}
                   className="btn-clear-filters"
                 >
                   Clear all
@@ -122,6 +129,31 @@ const Journal = ({ entries, onViewEntry, onDeleteEntry }) => {
               </div>
 
               <div className="filter-grid">
+                <div>
+                  <label className="filter-section-label">Entry Type</label>
+                  <div className="filter-tags">
+                    <button
+                      onClick={() => setFilters({...filters, type: 'all'})}
+                      className={`filter-tag ${filters.type === 'all' ? 'active' : ''}`}
+                    >
+                      All
+                    </button>
+                    <button
+                      onClick={() => setFilters({...filters, type: 'distortion'})}
+                      className={`filter-tag ${filters.type === 'distortion' ? 'active' : ''}`}
+                    >
+                      Distortions
+                    </button>
+                    <button
+                      onClick={() => setFilters({...filters, type: 'stressor', errors: [], distortions: []})}
+                      className={`filter-tag ${filters.type === 'stressor' ? 'active' : ''}`}
+                    >
+                      Stressors
+                    </button>
+                  </div>
+                </div>
+
+                {showDistortionFilters && (
                 <div>
                   <label className="filter-section-label">Thinking Errors</label>
                   <div className="filter-tags">
@@ -136,7 +168,9 @@ const Journal = ({ entries, onViewEntry, onDeleteEntry }) => {
                     ))}
                   </div>
                 </div>
+                )}
 
+                {showDistortionFilters && (
                 <div>
                   <label className="filter-section-label">Cognitive Distortions</label>
                   <div className="filter-tags">
@@ -151,6 +185,7 @@ const Journal = ({ entries, onViewEntry, onDeleteEntry }) => {
                     ))}
                   </div>
                 </div>
+                )}
 
                 <div>
                   <label className="filter-section-label">Scores</label>
@@ -161,9 +196,9 @@ const Journal = ({ entries, onViewEntry, onDeleteEntry }) => {
                       <option value="low">Low Intensity (&lt;50)</option>
                     </select>
                     <select value={filters.efficacy} onChange={(e) => setFilters({...filters, efficacy: e.target.value})} className="score-select">
-                      <option value="all">Efficacy: Any</option>
-                      <option value="high">High Efficacy (50+)</option>
-                      <option value="low">Low Efficacy (&lt;50)</option>
+                      <option value="all">{efficacyLabel}: Any</option>
+                      <option value="high">High {efficacyLabel} (50+)</option>
+                      <option value="low">Low {efficacyLabel} (&lt;50)</option>
                     </select>
                   </div>
                 </div>
@@ -176,10 +211,17 @@ const Journal = ({ entries, onViewEntry, onDeleteEntry }) => {
               <div className="no-results">
                 No entries match your filters.
               </div>
-            ) : processedEntries.map(entry => (
-            <Card key={entry.id} className="journal-card" onClick={() => onViewEntry(entry)}>
+            ) : processedEntries.map(entry => {
+              const isStressor = entry.type === 'stressor';
+              return (
+            <Card key={entry.id} className={`journal-card ${isStressor ? 'stressor' : 'distortion'}`} onClick={() => onViewEntry(entry)}>
               <div className="card-header">
-                <span className="card-date">{new Date(entry.id).toLocaleDateString()}</span>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                  <span className="card-badge" style={{ backgroundColor: isStressor ? 'var(--secondary)' : 'var(--primary)', color: 'white' }}>
+                    {isStressor ? 'Stressor' : 'Distortion'}
+                  </span>
+                  <span className="card-date">{new Date(entry.id).toLocaleDateString()}</span>
+                </div>
                 <button 
                   className="delete-btn"
                   title="Delete session"
@@ -196,7 +238,11 @@ const Journal = ({ entries, onViewEntry, onDeleteEntry }) => {
               </div>
               <div className="card-thought">{entry.thought}</div>
               
-              {entry.aiBalancedThought && (
+              {isStressor && entry.aiCopingPlan ? (
+                <div className="balanced-thought-preview">
+                  <div dangerouslySetInnerHTML={{ __html: entry.aiCopingPlan }} />
+                </div>
+              ) : entry.aiBalancedThought && (
                 <div className="balanced-thought-preview">
                   <div dangerouslySetInnerHTML={{ __html: entry.aiBalancedThought }} />
                 </div>
@@ -205,7 +251,7 @@ const Journal = ({ entries, onViewEntry, onDeleteEntry }) => {
               {entry.aiScores && (
                 <div className="scores-preview">
                   <span>Intensity: <b>{entry.aiScores.intensity}</b></span>
-                  <span>Efficacy: <b>{entry.aiScores.efficacy}</b></span>
+                  <span>{isStressor ? 'Resilience' : 'Efficacy'}: <b>{entry.aiScores.resilience || entry.aiScores.efficacy}</b></span>
                 </div>
               )}
 
@@ -237,7 +283,7 @@ const Journal = ({ entries, onViewEntry, onDeleteEntry }) => {
                 })}
               </div>
             </Card>
-          ))}
+          )})}
           </div>
         </>
       )}
