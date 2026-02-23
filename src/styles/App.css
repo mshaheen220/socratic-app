@@ -783,6 +783,24 @@ textarea:focus {
   margin-bottom: 1.5rem;
 }
 
+.ai-analysis-card.distortion {
+  background-color: var(--primary-light);
+}
+
+.ai-analysis-card.distortion .ai-title,
+.ai-analysis-card.distortion .ai-label {
+  color: var(--primary-dark);
+}
+
+.ai-analysis-card.stressor {
+  background-color: var(--secondary-light);
+}
+
+.ai-analysis-card.stressor .ai-title,
+.ai-analysis-card.stressor .ai-label {
+  color: var(--secondary-dark);
+}
+
 .ai-title {
   color: var(--ai-text);
   margin-top: 0;

@@ -10,7 +10,7 @@ const Tooltip = ({ text, children, style }) => {
     const handleMouseEnter = () => {
         if (wrapperRef.current) {
             const rect = wrapperRef.current.getBoundingClientRect();
-            if (rect.top < 40) {
+            if (rect.top < 100) {
                 setCoords({ top: rect.bottom + 8, left: rect.left + (rect.width / 2) });
                 setPlacement('bottom');
             } else {

@@ -46,7 +46,7 @@ const SessionDetails = ({ session, onClose }) => {
           </div>
 
           {(session.aiSummary || session.aiBalancedThought || session.aiCopingPlan || session.aiScores) ? (
-            <div className="ai-analysis-card">
+            <div className={`ai-analysis-card ${isStressor ? 'stressor' : 'distortion'}`}>
               <h3 className="ai-title">AI Analysis</h3>
               
               {session.aiSummary && (
@@ -88,7 +88,7 @@ const SessionDetails = ({ session, onClose }) => {
               )}
             </div>
           ) : session.aiInsight && (
-            <div className="ai-analysis-card">
+            <div className={`ai-analysis-card ${isStressor ? 'stressor' : 'distortion'}`}>
               <label className="ai-label">AI Insight</label>
               <div dangerouslySetInnerHTML={{ __html: session.aiInsight }} />
             </div>
