@@ -998,7 +998,3 @@ textarea:focus {
   align-items: center;
   padding: 1rem 0;
 }
-
-.simple-cloud .tag-cloud-tag {
-  cursor: default;
-}
