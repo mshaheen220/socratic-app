@@ -15,8 +15,16 @@ const Analytics = ({ entries }) => {
     let totalIntensity = 0;
     let totalEfficacy = 0;
     let scoreCount = 0;
+    let distortionSessions = 0;
+    let stressorSessions = 0;
 
     entries.forEach(entry => {
+      if (entry.type === 'stressor') {
+        stressorSessions++;
+      } else {
+        distortionSessions++;
+      }
+
       if (entry.selectedDistortions) {
         entry.selectedDistortions.forEach(id => {
           distortionCounts[id] = (distortionCounts[id] || 0) + 1;
@@ -29,10 +37,15 @@ const Analytics = ({ entries }) => {
           totalErrors++;
         });
       }
-      if (entry.aiScores && typeof entry.aiScores.intensity === 'number' && typeof entry.aiScores.efficacy === 'number') {
-        totalIntensity += entry.aiScores.intensity;
-        totalEfficacy += entry.aiScores.efficacy;
-        scoreCount++;
+      
+      const scores = entry.aiScores;
+      if (scores && typeof scores.intensity === 'number') {
+        const effectiveness = scores.efficacy ?? scores.resilience;
+        if (typeof effectiveness === 'number') {
+          totalIntensity += scores.intensity;
+          totalEfficacy += effectiveness;
+          scoreCount++;
+        }
       }
     });
 
@@ -40,7 +53,7 @@ const Analytics = ({ entries }) => {
       id: d.id,
       label: d.label,
       count: distortionCounts[d.id] || 0,
-      fill: d.color?.text || '#8884d8'
+      fill: d.color?.background || '#8884d8'
     })).sort((a, b) => b.count - a.count);
 
     const sortedErrors = Object.entries(errorCounts)
@@ -51,26 +64,32 @@ const Analytics = ({ entries }) => {
           label: def ? def.label : id, 
           count,
           percentage: totalErrors ? Math.round((count / totalErrors) * 100) : 0,
-          fill: def?.color?.text || '#8884d8'
+          fill: def?.color?.background || '#8884d8'
         };
       })
       .sort((a, b) => b.count - a.count);
 
     const chartData = entries
-      .filter(e => e.aiScores && typeof e.aiScores.intensity === 'number' && typeof e.aiScores.efficacy === 'number')
-      .map(e => ({
-        id: e.id,
-        date: new Date(e.id).toLocaleDateString(undefined, { month: 'short', day: 'numeric' }),
-        timestamp: e.id,
-        intensity: e.aiScores.intensity,
-        efficacy: e.aiScores.efficacy
-      }))
+      .map(e => {
+        const scores = e.aiScores || {};
+        const effectiveness = scores.efficacy ?? scores.resilience;
+        return {
+          id: e.id,
+          date: new Date(e.id).toLocaleDateString(undefined, { month: 'short', day: 'numeric' }),
+          timestamp: e.id,
+          intensity: scores.intensity,
+          efficacy: effectiveness
+        };
+      })
+      .filter(e => typeof e.intensity === 'number' && typeof e.efficacy === 'number')
       .sort((a, b) => a.timestamp - b.timestamp);
 
     return { 
       sortedDistortions, 
       sortedErrors, 
       totalSessions: entries.length,
+      distortionSessions,
+      stressorSessions,
       avgIntensity: scoreCount ? Math.round(totalIntensity / scoreCount) : 0,
       avgEfficacy: scoreCount ? Math.round(totalEfficacy / scoreCount) : 0,
       hasScores: scoreCount > 0,
@@ -84,6 +103,16 @@ const Analytics = ({ entries }) => {
       <div className="analytics-grid">
         <Card title="Total Sessions">
           <div className="stat-big">{stats.totalSessions}</div>
+          <div style={{ display: 'flex', justifyContent: 'center', gap: '2rem', marginTop: '0.5rem' }}>
+            <div style={{ textAlign: 'center' }}>
+              <span style={{ display: 'block', fontSize: '1.25rem', fontWeight: '700', color: 'var(--primary)' }}>{stats.distortionSessions}</span>
+              <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>Distortions</span>
+            </div>
+            <div style={{ textAlign: 'center' }}>
+              <span style={{ display: 'block', fontSize: '1.25rem', fontWeight: '700', color: 'var(--secondary)' }}>{stats.stressorSessions}</span>
+              <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>Stressors</span>
+            </div>
+          </div>
         </Card>
 
         <Card title="Average Scores">
@@ -100,7 +129,7 @@ const Analytics = ({ entries }) => {
               </div>
               <div>
                 <div className="chart-label">
-                  <span>Efficacy</span>
+                  <span>Efficacy / Resilience</span>
                   <span>{stats.avgEfficacy}</span>
                 </div>
                 <div className="chart-bar-bg">
@@ -133,7 +162,7 @@ const Analytics = ({ entries }) => {
                   />
                   <Legend />
                   <Line type="monotone" dataKey="intensity" stroke="#f59e0b" fill="none" name="Intensity" strokeWidth={2} activeDot={{ r: 6 }} dot={{ r: 4 }} />
-                  <Line type="monotone" dataKey="efficacy" stroke="#059669" fill="none" name="Efficacy" strokeWidth={2} activeDot={{ r: 6 }} dot={{ r: 4 }} />
+                  <Line type="monotone" dataKey="efficacy" stroke="#059669" fill="none" name="Efficacy / Resilience" strokeWidth={2} activeDot={{ r: 6 }} dot={{ r: 4 }} />
                 </LineChart>
               </ResponsiveContainer>
             </div>
@@ -190,7 +219,11 @@ const Analytics = ({ entries }) => {
                     background={{ fill: 'transparent' }}
                     clockWise
                     dataKey="count"
-                  />
+                  >
+                    {stats.sortedErrors.slice(0, 5).map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={entry.fill} />
+                    ))}
+                  </RadialBar>
                   <Tooltip 
                     formatter={(value, name, props) => [value, props.payload.name]}
                     labelStyle={{ display: 'none' }}

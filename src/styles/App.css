@@ -1,6 +1,7 @@
 :root {
   --primary: #4f46e5;
   --primary-hover: #4338ca;
+  --secondary: #db2777;
   --bg: #f3f4f6;
   --surface: #ffffff;
   --text: #1f2937;
@@ -17,6 +18,8 @@
   --border-dark: #d1d5db;
   --primary-light: #e0e7ff;
   --primary-dark: #3730a3;
+  --secondary-light: #fce7f3;
+  --secondary-dark: #831843;
   
   /* Status colors */
   --success: #059669;
@@ -35,6 +38,7 @@
 [data-theme="dark"] {
   --primary: #6366f1;
   --primary-hover: #818cf8;
+  --secondary: #ec4899;
   --bg: #111827;
   --surface: #1f2937;
   --text: #f9fafb;
@@ -49,6 +53,8 @@
   --border-dark: #4b5563;
   --primary-light: #312e81;
   --primary-dark: #e0e7ff;
+  --secondary-light: #831843;
+  --secondary-dark: #fce7f3;
 
   --success: #10b981;
   --success-hover: #059669;
@@ -251,9 +257,24 @@ textarea:focus {
 }
 
 .journal-card:hover {
-  border-color: var(--primary);
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
   transform: translateY(-1px);
+}
+
+.journal-card.distortion {
+  border-left: 4px solid var(--primary);
+}
+
+.journal-card.distortion:hover {
+  border-color: var(--primary);
+}
+
+.journal-card.stressor {
+  border-left: 4px solid var(--secondary);
+}
+
+.journal-card.stressor:hover {
+  border-color: var(--secondary);
 }
 
 .card-header {
@@ -325,6 +346,14 @@ textarea:focus {
   box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
 }
 
+.modal-content.distortion {
+  border-top: 8px solid var(--primary);
+}
+
+.modal-content.stressor {
+  border-top: 8px solid var(--secondary);
+}
+
 .modal-header {
   display: flex;
   justify-content: space-between;
@@ -337,6 +366,18 @@ textarea:focus {
 .modal-header h2 {
   margin: 0;
   font-size: 1.5rem;
+}
+
+.modal-header.distortion h2 {
+  color: var(--primary);
+}
+
+.modal-header.stressor h2 {
+  color: var(--secondary);
+}
+
+.session-type-title {
+  cursor: help;
 }
 
 .close-btn {
@@ -844,4 +885,68 @@ textarea:focus {
 
 .theme-toggle:hover {
   background: var(--border);
+}
+
+.triage-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+}
+
+.triage-container {
+  max-width: 800px;
+  margin: 2rem auto;
+  padding: 0 1rem;
+}
+
+.triage-title {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.triage-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.triage-card {
+  cursor: pointer;
+  padding: 2rem;
+  border: 2px solid transparent;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.triage-card.distortion {
+  border-color: var(--primary);
+}
+
+.triage-card.distortion:hover {
+  background-color: var(--primary-light);
+}
+
+.triage-card.stressor {
+  border-color: var(--secondary);
+}
+
+.triage-card.stressor:hover {
+  background-color: var(--secondary-light);
+}
+
+.triage-card h3 {
+  margin-top: 0;
+}
+
+.triage-card.distortion h3 { color: var(--primary); }
+.triage-card.stressor h3 { color: var(--secondary); }
+
+.triage-card ul {
+  text-align: left;
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  margin-top: 1rem;
+}
+
+.triage-actions {
+  text-align: center;
 }

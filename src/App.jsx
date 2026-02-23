@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import QuestionStep from './components/QuestionStep';
 import MultiSelectStep from './components/MultiSelectStep';
 import Journal from './components/Journal';
+import ThoughtTriage from './components/ThoughtTriage';
 import SessionDetails from './components/SessionDetails';
 import Analytics from './components/Analytics';
 import Header from './components/Header';
@@ -16,12 +17,13 @@ function AppContent() {
   const [history, setHistory] = useLocalStorage('socratic_history', []);
   const [lastBackup, setLastBackup] = useLocalStorage('socratic_last_backup', null);
   const [theme, setTheme] = useLocalStorage('socratic_theme', 'light');
-  const [view, setView] = useState('journal'); // 'journal' | 'wizard' | 'analytics'
+  const [view, setView] = useState('journal'); // 'journal' | 'triage' | 'wizard' | 'analytics'
   const [selectedEntry, setSelectedEntry] = useState(null);
   const [step, setStep] = useState(1);
   const [isGenerating, setIsGenerating] = useState(false);
 
   const initialSessionState = {
+    type: 'distortion', // 'distortion' | 'stressor'
     thought: '',
     selectedErrors: [],
     selectedDistortions: [],
@@ -30,12 +32,18 @@ function AppContent() {
     feelingsVsFacts: '',
     alternativeInterpretations: '',
     habitOrPast: '',
-    likelihoodVsPossibility: ''
+    likelihoodVsPossibility: '',
+    // Coping Schema
+    radicalAcceptance: '',
+    worstCase: '',
+    worstCasePlan: '',
+    controlIn: '',
+    controlOut: ''
   };
 
   const [session, setSession] = useState(initialSessionState);
 
-  const totalSteps = 6;
+  const totalSteps = session.type === 'stressor' ? 4 : 6;
 
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme);
@@ -43,6 +51,11 @@ function AppContent() {
 
   const startNewSession = () => {
     setSession(initialSessionState);
+    setView('triage');
+  };
+
+  const handleTriageSelect = (type) => {
+    setSession(prev => ({ ...prev, type }));
     setStep(1);
     setView('wizard');
   };
@@ -69,6 +82,7 @@ function AppContent() {
       ...session,
       aiSummary: aiData?.summary,
       aiBalancedThought: aiData?.balancedThought,
+      aiCopingPlan: aiData?.copingPlan,
       aiScores: aiData?.scores,
       id: Date.now()
     };
@@ -126,7 +140,7 @@ function AppContent() {
 
   return (
     <div className="app-wrapper">
-      {view !== 'wizard' && (
+      {view !== 'wizard' && view !== 'triage' && (
         <Header 
           entries={safeHistory} 
           onNewSession={startNewSession} 
@@ -149,6 +163,8 @@ function AppContent() {
         />
       ) : view === 'analytics' ? (
         <Analytics entries={safeHistory} />
+      ) : view === 'triage' ? (
+        <ThoughtTriage onSelect={handleTriageSelect} onCancel={() => setView('journal')} />
       ) : (
         <>
           <button 
@@ -167,16 +183,18 @@ function AppContent() {
             </span>
           </h1>
           
+          {/* Step 1: Shared Thought Identification */}
           {step === 1 && (
             <QuestionStep 
-              label="1. Thought I want to question:"
+              label={session.type === 'stressor' ? "1. What is the stressful situation?" : "1. Thought I want to question:"}
               value={session.thought}
               onChange={(v) => setSession({...session, thought: v})}
-              placeholder="Identifying the specific negative thought."
+              placeholder={session.type === 'stressor' ? "Describe the difficult situation you are facing." : "Identifying the specific negative thought."}
             />
           )}
 
-          {step === 2 && (
+          {/* DISTORTION WORKFLOW STEPS */}
+          {session.type === 'distortion' && step === 2 && (
             <MultiSelectStep 
               label="2. Which thinking errors are present?"
               description="Identify any cognitive distortions that might be influencing this thought. Select all that apply."
@@ -186,7 +204,7 @@ function AppContent() {
             />
           )}
 
-          {step === 3 && (
+          {session.type === 'distortion' && step === 3 && (
             <MultiSelectStep 
               label="3. Are there other cognitive distortions?"
               description="Check if any of these specific distortions apply to your thought."
@@ -196,7 +214,7 @@ function AppContent() {
             />
           )}
 
-          {step === 4 && (
+          {session.type === 'distortion' && step === 4 && (
             <>
               <QuestionStep 
                 label="4. Evidence for this thought:"
@@ -214,7 +232,7 @@ function AppContent() {
             </>
           )}
 
-          {step === 5 && (
+          {session.type === 'distortion' && step === 5 && (
             <>
               <MultiSelectStep 
                 label="6. Feelings vs. Facts:"
@@ -236,7 +254,7 @@ function AppContent() {
             </>
           )}
 
-          {step === 6 && (
+          {session.type === 'distortion' && step === 6 && (
             <>
               <MultiSelectStep 
                 label="8. Habit or Past Experience:"
@@ -262,6 +280,44 @@ function AppContent() {
                 onChange={(val) => setSession({...session, likelihoodVsPossibility: val})}
                 singleSelect={true}
               />
+            </>
+          )}
+
+          {/* COPING WORKFLOW STEPS */}
+          {session.type === 'stressor' && step === 2 && (
+            <QuestionStep 
+              label="2. Radical Acceptance:"
+              value={session.radicalAcceptance}
+              onChange={(v) => setSession({...session, radicalAcceptance: v})}
+              placeholder="What are the facts of this situation that I cannot change right now? (Acknowledging them doesn't mean liking them)."
+            />
+          )}
+
+          {session.type === 'stressor' && step === 3 && (
+            <>
+              <QuestionStep 
+                label="3a. Decatastrophizing - Worst Case:"
+                value={session.worstCase}
+                onChange={(v) => setSession({...session, worstCase: v})}
+                placeholder="If the worst happened, what would that look like?"
+              />
+              <QuestionStep 
+                label="3b. My Action Plan:"
+                value={session.worstCasePlan}
+                onChange={(v) => setSession({...session, worstCasePlan: v})}
+                placeholder="How would I cope if the worst case happened? Who could help?"
+              />
+            </>
+          )}
+
+          {session.type === 'stressor' && step === 4 && (
+            <>
+              <div className="mb-6">
+                <label className="block text-gray-700 font-bold mb-2">4. Control Audit</label>
+                <p className="text-sm text-gray-500 mb-2">Separate the situation into two buckets.</p>
+                <textarea className="w-full p-3 border rounded mb-3" rows="3" placeholder="What is IN my control?" value={session.controlIn} onChange={(e) => setSession({...session, controlIn: e.target.value})} />
+                <textarea className="w-full p-3 border rounded" rows="3" placeholder="What is OUT of my control?" value={session.controlOut} onChange={(e) => setSession({...session, controlOut: e.target.value})} />
+              </div>
             </>
           )}
 

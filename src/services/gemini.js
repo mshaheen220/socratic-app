@@ -10,9 +10,27 @@ export const generateSessionInsight = async (session) => {
   }
 
   const genAI = new GoogleGenerativeAI(apiKey);
-  const model = genAI.getGenerativeModel({
-    model: "gemini-2.5-flash-lite",
-    systemInstruction: `Act as a compassionate CBT therapist. I have completed a Socratic questioning exercise based on the Socratic Questioning, Cognitive Distortions, and Thinking Errors worksheets from TherapistAid.com.
+  
+  // Define System Instructions based on Session Type
+  const isStressor = session.type === 'stressor';
+  
+  const systemInstruction = isStressor 
+    ? `Act as a compassionate CBT therapist. The user is facing a Valid Stressor—a difficult situation that is objectively true, not a distortion.
+
+Based on CBT and Resilience principles (Radical Acceptance, Decatastrophizing, Control Audits), analyze the user's entry and return ONLY a JSON object with the following keys:
+
+{
+  "AIsummary": "An empathetic HTML-formatted summary (starting with <div class='AIsummary'>) validating the difficulty of the situation.",
+  "AIcopingPlan": "A suggested resilience strategy in HTML (starting with <div class='AIcopingPlan'>), synthesizing their action plan and acceptance.",
+  "scores": {
+    "intensity": [An integer 1-100 representing the severity/distress of the situation],
+    "resilience": [An integer 1-100 representing how well the user's plan addresses the stressor],
+    "scoreExplanation": "An HTML-formatted explanation of why these scores were assigned."
+  }
+}
+
+Do not include any conversational filler or markdown code blocks. Return only the raw JSON string.`
+    : `Act as a compassionate CBT therapist. I have completed a Socratic questioning exercise based on the Socratic Questioning, Cognitive Distortions, and Thinking Errors worksheets from TherapistAid.com.
 
 Based on CBT principles, analyze the user's entry and return ONLY a JSON object with the following keys:
 
@@ -26,7 +44,11 @@ Based on CBT principles, analyze the user's entry and return ONLY a JSON object 
   }
 }
 
-Do not include any conversational filler or markdown code blocks. Return only the raw JSON string.`,
+Do not include any conversational filler or markdown code blocks. Return only the raw JSON string.`;
+
+  const model = genAI.getGenerativeModel({
+    model: "gemini-2.5-flash-lite",
+    systemInstruction,
     generationConfig: { responseMimeType: "application/json" }
   });
 
@@ -35,7 +57,7 @@ Do not include any conversational filler or markdown code blocks. Return only th
     return ids.map(id => source.find(i => i.id === id)?.label || id).join(', ');
   };
 
-  const prompt = `
+  const prompt = !isStressor ? `
   My Input Data:
     - Negative Thought: "${session.thought}"
     - Thinking Errors: ${getLabels(session.selectedErrors, THINKING_ERRORS)}
@@ -46,6 +68,14 @@ Do not include any conversational filler or markdown code blocks. Return only th
     - Alternative Interpretations: ${session.alternativeInterpretations}
     - Habit/Past Influence: ${Array.isArray(session.habitOrPast) ? session.habitOrPast.join(', ') : session.habitOrPast}
     - Likelihood vs Possibility: ${session.likelihoodVsPossibility}
+  ` : `
+  My Input Data (Valid Stressor):
+    - Stressful Situation: "${session.thought}"
+    - Radical Acceptance (Facts I cannot change): "${session.radicalAcceptance}"
+    - Worst Case Scenario: "${session.worstCase}"
+    - Action Plan for Worst Case: "${session.worstCasePlan}"
+    - In My Control: "${session.controlIn}"
+    - Out of My Control: "${session.controlOut}"
   `;
 
   const result = await model.generateContent(prompt);
@@ -60,6 +90,7 @@ Do not include any conversational filler or markdown code blocks. Return only th
   return {
     summary: insight.AIsummary,
     balancedThought: insight.AIbalancedThought,
+    copingPlan: insight.AIcopingPlan,
     scores: insight.scores,
   };
 };

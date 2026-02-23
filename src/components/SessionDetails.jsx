@@ -6,6 +6,12 @@ import Tooltip from './Tooltip';
 const SessionDetails = ({ session, onClose }) => {
   if (!session) return null;
 
+  const isStressor = session.type === 'stressor';
+  const title = isStressor ? 'Stressor Details' : 'Distortion Details';
+  const typeTooltip = isStressor 
+    ? "Valid Stressor: A real, difficult situation requiring coping and acceptance." 
+    : "Cognitive Distortion: A biased thought pattern requiring logical challenging.";
+
   // Helper to display label for single-select IDs
   const getLabel = (val, options) => {
     if (!val) return 'Not answered';
@@ -21,9 +27,11 @@ const SessionDetails = ({ session, onClose }) => {
 
   return (
     <div className="modal-overlay" onClick={onClose}>
-      <div className="modal-content" onClick={e => e.stopPropagation()}>
-        <div className="modal-header">
-          <h2>Session Details</h2>
+      <div className={`modal-content ${isStressor ? 'stressor' : 'distortion'}`} onClick={e => e.stopPropagation()}>
+        <div className={`modal-header ${isStressor ? 'stressor' : 'distortion'}`}>
+          <Tooltip text={typeTooltip}>
+            <h2 className="session-type-title">{title}</h2>
+          </Tooltip>
           <button onClick={onClose} className="close-btn">&times;</button>
         </div>
         <div className="modal-body">
@@ -33,11 +41,11 @@ const SessionDetails = ({ session, onClose }) => {
           </div>
 
           <div className="detail-group">
-            <label>Thought</label>
+            <label>{isStressor ? 'Situation' : 'Thought'}</label>
             <p className="highlight-text">{session.thought}</p>
           </div>
 
-          {(session.aiSummary || session.aiBalancedThought || session.aiScores) ? (
+          {(session.aiSummary || session.aiBalancedThought || session.aiCopingPlan || session.aiScores) ? (
             <div className="ai-analysis-card">
               <h3 className="ai-title">AI Analysis</h3>
               
@@ -55,6 +63,13 @@ const SessionDetails = ({ session, onClose }) => {
                 </div>
               )}
 
+              {session.aiCopingPlan && (
+                <div className="ai-section">
+                  <label className="ai-label">Coping Plan</label>
+                  <div dangerouslySetInnerHTML={{ __html: session.aiCopingPlan }} />
+                </div>
+              )}
+
               {session.aiScores && (
                 <div>
                   <label className="ai-label">Scores</label>
@@ -63,7 +78,7 @@ const SessionDetails = ({ session, onClose }) => {
                       <strong>Intensity:</strong> {session.aiScores.intensity}
                     </div>
                     <div className="ai-score-badge">
-                      <strong>Efficacy:</strong> {session.aiScores.efficacy}
+                      <strong>{isStressor ? 'Resilience' : 'Efficacy'}:</strong> {session.aiScores.resilience || session.aiScores.efficacy}
                     </div>
                   </div>
                   {session.aiScores.scoreExplanation && (
@@ -79,65 +94,80 @@ const SessionDetails = ({ session, onClose }) => {
             </div>
           )}
 
-          <div className="detail-group">
-            <label>Thinking Errors</label>
-            <div className="tags">
-              {session.selectedErrors.length > 0 ? (
-                session.selectedErrors.map(id => {
-                  const error = THINKING_ERRORS.find(e => e.id === id);
-                  const style = error?.color ? { backgroundColor: error.color.background, color: error.color.text } : {};
-                  return (
-                    <Tooltip key={id} text={error?.description}>
-                      <span className="tag" style={style}>{error?.label || id}</span>
-                    </Tooltip>
-                  );
-                })
-              ) : (
-                <p>None identified</p>
-              )}
+          {isStressor ? (
+            <div className="detail-grid">
+              <div className="detail-group" style={{ gridColumn: '1 / -1' }}>
+                <label>Radical Acceptance</label>
+                <p>{session.radicalAcceptance || '-'}</p>
+              </div>
+              <div className="detail-group"><label>Worst Case</label><p>{session.worstCase || '-'}</p></div>
+              <div className="detail-group"><label>Action Plan</label><p>{session.worstCasePlan || '-'}</p></div>
+              <div className="detail-group"><label>In My Control</label><p>{session.controlIn || '-'}</p></div>
+              <div className="detail-group"><label>Out of My Control</label><p>{session.controlOut || '-'}</p></div>
             </div>
-          </div>
-
-          <div className="detail-group">
-            <label>Cognitive Distortions</label>
-            <div className="tags">
-              {session.selectedDistortions && session.selectedDistortions.length > 0 ? (
-                session.selectedDistortions.map(id => {
-                  const distortion = COGNITIVE_DISTORTIONS.find(d => d.id === id);
-                  const style = distortion?.color ? { backgroundColor: distortion.color.background, color: distortion.color.text } : {};
-                  return (
-                    <Tooltip key={id} text={distortion?.description}>
-                      <span className="tag" style={style}>{distortion?.label || id}</span>
-                    </Tooltip>
-                  );
-                })
-              ) : (
-                <p>None identified</p>
-              )}
-            </div>
-          </div>
-
-          <div className="detail-grid">
-            <div className="detail-group"><label>Evidence For</label><p>{session.evidenceFor || '-'}</p></div>
-            <div className="detail-group"><label>Evidence Against</label><p>{session.evidenceAgainst || '-'}</p></div>
-            <div className="detail-group"><label>Feelings vs Facts</label><p>{getLabel(session.feelingsVsFacts, [{id:'feelings', label:'Feelings'}, {id:'facts', label:'Facts'}])}</p></div>
-            <div className="detail-group"><label>Alternative View</label><p>{session.alternativeInterpretations || '-'}</p></div>
-            <div className="detail-group">
-              <label>Habit/Past</label>
-              {Array.isArray(session.habitOrPast) && session.habitOrPast.length > 0 ? (
+          ) : (
+            <>
+              <div className="detail-group">
+                <label>Thinking Errors</label>
                 <div className="tags">
-                  {session.habitOrPast.map(id => {
-                    const option = habitOptions.find(o => o.id === id);
-                    const style = option?.color ? { backgroundColor: option.color.background, color: option.color.text } : {};
-                    return <span key={id} className="tag" style={style}>{option?.label || id}</span>;
-                  })}
+                  {session.selectedErrors.length > 0 ? (
+                    session.selectedErrors.map(id => {
+                      const error = THINKING_ERRORS.find(e => e.id === id);
+                      const style = error?.color ? { backgroundColor: error.color.background, color: error.color.text } : {};
+                      return (
+                        <Tooltip key={id} text={error?.description}>
+                          <span className="tag" style={style}>{error?.label || id}</span>
+                        </Tooltip>
+                      );
+                    })
+                  ) : (
+                    <p>None identified</p>
+                  )}
                 </div>
-              ) : (
-                <p>-</p>
-              )}
-            </div>
-            <div className="detail-group"><label>Likelihood</label><p>{getLabel(session.likelihoodVsPossibility, [{id:'likely', label:'Likely Outcome'}, {id:'possible', label:'Just a Possibility'}])}</p></div>
-          </div>
+              </div>
+
+              <div className="detail-group">
+                <label>Cognitive Distortions</label>
+                <div className="tags">
+                  {session.selectedDistortions && session.selectedDistortions.length > 0 ? (
+                    session.selectedDistortions.map(id => {
+                      const distortion = COGNITIVE_DISTORTIONS.find(d => d.id === id);
+                      const style = distortion?.color ? { backgroundColor: distortion.color.background, color: distortion.color.text } : {};
+                      return (
+                        <Tooltip key={id} text={distortion?.description}>
+                          <span className="tag" style={style}>{distortion?.label || id}</span>
+                        </Tooltip>
+                      );
+                    })
+                  ) : (
+                    <p>None identified</p>
+                  )}
+                </div>
+              </div>
+
+              <div className="detail-grid">
+                <div className="detail-group"><label>Evidence For</label><p>{session.evidenceFor || '-'}</p></div>
+                <div className="detail-group"><label>Evidence Against</label><p>{session.evidenceAgainst || '-'}</p></div>
+                <div className="detail-group"><label>Feelings vs Facts</label><p>{getLabel(session.feelingsVsFacts, [{id:'feelings', label:'Feelings'}, {id:'facts', label:'Facts'}])}</p></div>
+                <div className="detail-group"><label>Alternative View</label><p>{session.alternativeInterpretations || '-'}</p></div>
+                <div className="detail-group">
+                  <label>Habit/Past</label>
+                  {Array.isArray(session.habitOrPast) && session.habitOrPast.length > 0 ? (
+                    <div className="tags">
+                      {session.habitOrPast.map(id => {
+                        const option = habitOptions.find(o => o.id === id);
+                        const style = option?.color ? { backgroundColor: option.color.background, color: option.color.text } : {};
+                        return <span key={id} className="tag" style={style}>{option?.label || id}</span>;
+                      })}
+                    </div>
+                  ) : (
+                    <p>-</p>
+                  )}
+                </div>
+                <div className="detail-group"><label>Likelihood</label><p>{getLabel(session.likelihoodVsPossibility, [{id:'likely', label:'Likely Outcome'}, {id:'possible', label:'Just a Possibility'}])}</p></div>
+              </div>
+            </>
+          )}
         </div>
       </div>
     </div>
