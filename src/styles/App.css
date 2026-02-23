@@ -783,6 +783,28 @@ textarea:focus {
   margin-bottom: 1.5rem;
 }
 
+.keyword-tag {
+  background-color: var(--surface);
+  border: 1px solid var(--border-dark);
+  color: var(--text-secondary);
+}
+
+.keywords-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+}
+
+.keyword-pill {
+  font-size: 0.75rem;
+  background-color: var(--bg);
+  color: var(--text-secondary);
+  padding: 0.1rem 0.5rem;
+  border-radius: 4px;
+  border: 1px solid var(--border);
+}
+
 .ai-analysis-card.distortion {
   background-color: var(--primary-light);
 }
@@ -967,4 +989,16 @@ textarea:focus {
 
 .triage-actions {
   text-align: center;
+}
+
+.tag-cloud-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  padding: 1rem 0;
+}
+
+.simple-cloud .tag-cloud-tag {
+  cursor: default;
 }

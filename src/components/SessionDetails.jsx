@@ -45,7 +45,7 @@ const SessionDetails = ({ session, onClose }) => {
             <p className="highlight-text">{session.thought}</p>
           </div>
 
-          {(session.aiSummary || session.aiBalancedThought || session.aiCopingPlan || session.aiScores) ? (
+          {(session.aiSummary || session.aiBalancedThought || session.aiCopingPlan || session.aiScores || session.aiKeywords) ? (
             <div className={`ai-analysis-card ${isStressor ? 'stressor' : 'distortion'}`}>
               <h3 className="ai-title">AI Analysis</h3>
               
@@ -67,6 +67,17 @@ const SessionDetails = ({ session, onClose }) => {
                 <div className="ai-section">
                   <label className="ai-label">Coping Plan</label>
                   <div dangerouslySetInnerHTML={{ __html: session.aiCopingPlan }} />
+                </div>
+              )}
+
+              {session.aiKeywords && session.aiKeywords.length > 0 && (
+                <div className="ai-section">
+                  <label className="ai-label">Keywords</label>
+                  <div className="tags">
+                    {session.aiKeywords.map((kw, i) => (
+                      <span key={i} className="tag keyword-tag">{kw}</span>
+                    ))}
+                  </div>
                 </div>
               )}
 

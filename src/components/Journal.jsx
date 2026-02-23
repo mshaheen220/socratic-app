@@ -255,6 +255,14 @@ const Journal = ({ entries, onViewEntry, onDeleteEntry }) => {
                 </div>
               )}
 
+              {entry.aiKeywords && entry.aiKeywords.length > 0 && (
+                <div className="keywords-list">
+                  {entry.aiKeywords.map((kw, i) => (
+                    <span key={i} className="keyword-pill">{kw}</span>
+                  ))}
+                </div>
+              )}
+
               <div className="tags-preview">
                 {entry.selectedErrors && entry.selectedErrors.map(id => {
                   const item = THINKING_ERRORS.find(e => e.id === id);
