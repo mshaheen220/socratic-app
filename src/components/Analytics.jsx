@@ -2,7 +2,7 @@ import React, { useMemo } from 'react';
 import {
   LineChart, Line, BarChart, Bar, PieChart, Pie, Cell, RadialBarChart, RadialBar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer
 } from 'recharts';
-import { TagCloud } from 'react-tagcloud';
+import WordCloud from './WordCloud';
 import { THINKING_ERRORS } from '../constants/thinkingErrors';
 import { COGNITIVE_DISTORTIONS } from '../constants/cognitiveDisorders';
 import Card from './Card';
@@ -94,8 +94,8 @@ const Analytics = ({ entries }) => {
       .sort((a, b) => a.timestamp - b.timestamp);
 
     const wordCloudData = Object.entries(keywordCounts)
-      .map(([value, count]) => ({ value, count }))
-      .sort((a, b) => b.count - a.count)
+      .map(([text, value]) => ({ text, value }))
+      .sort((a, b) => b.value - a.value)
       .slice(0, 40);
 
     return { 
@@ -159,13 +159,8 @@ const Analytics = ({ entries }) => {
 
         <Card title="Topic Cloud">
           {stats.wordCloudData.length > 0 ? (
-            <div className="tag-cloud-container">
-              <TagCloud
-                minSize={14}
-                maxSize={35}
-                tags={stats.wordCloudData}
-                className="simple-cloud"
-              />
+            <div className="tag-cloud-container" style={{ height: 300, width: '100%' }}>
+              <WordCloud words={stats.wordCloudData} />
             </div>
           ) : (
             <p className="empty-text">No keywords generated yet.</p>
