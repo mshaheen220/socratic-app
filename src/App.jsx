@@ -83,6 +83,7 @@ function AppContent() {
       aiSummary: aiData?.summary,
       aiBalancedThought: aiData?.balancedThought,
       aiCopingPlan: aiData?.copingPlan,
+      aiKeywords: aiData?.keywords,
       aiScores: aiData?.scores,
       id: Date.now()
     };

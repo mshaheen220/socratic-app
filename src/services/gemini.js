@@ -14,6 +14,8 @@ export const generateSessionInsight = async (session) => {
   // Define System Instructions based on Session Type
   const isStressor = session.type === 'stressor';
   
+  const STANDARD_TOPICS = "Work & Career, Relationships, Family, Health & Body, Self-Esteem, Finances, Social Interactions, Future & Anxiety, Past & Trauma, Daily Life";
+
   const systemInstruction = isStressor 
     ? `Act as a compassionate CBT therapist. The user is facing a Valid Stressor—a difficult situation that is objectively true, not a distortion.
 
@@ -22,6 +24,7 @@ Based on CBT and Resilience principles (Radical Acceptance, Decatastrophizing, C
 {
   "AIsummary": "An empathetic HTML-formatted summary (starting with <div class='AIsummary'>) validating the difficulty of the situation.",
   "AIcopingPlan": "A suggested resilience strategy in HTML (starting with <div class='AIcopingPlan'>), synthesizing their action plan and acceptance.",
+  "keywords": ["Array of 5-7 keywords. IMPORTANT: The first keyword MUST be selected from this standard list: [${STANDARD_TOPICS}]. The remaining keywords should be specific coping strategies."],
   "scores": {
     "intensity": [An integer 1-100 representing the severity/distress of the situation],
     "resilience": [An integer 1-100 representing how well the user's plan addresses the stressor],
@@ -37,6 +40,7 @@ Based on CBT principles, analyze the user's entry and return ONLY a JSON object 
 {
   "AIsummary": "An empathetic HTML-formatted summary (starting with <div class='AIsummary'>) analyzing the logic of the thought.",
   "AIbalancedThought": "A suggestion for a new, balanced thought in HTML (starting with <div class='AIbalancedThought'>).",
+  "keywords": ["Array of 5-7 keywords. IMPORTANT: The first keyword MUST be selected from this standard list: [${STANDARD_TOPICS}]. The remaining keywords should be specific techniques or details."],
   "scores": {
     "intensity": [An integer 1-100 representing the severity/distress of the initial thought],
     "efficacy": [An integer 1-100 representing how well the user's Socratic questioning dismantled the distortion],
@@ -91,6 +95,7 @@ Do not include any conversational filler or markdown code blocks. Return only th
     summary: insight.AIsummary,
     balancedThought: insight.AIbalancedThought,
     copingPlan: insight.AIcopingPlan,
+    keywords: insight.keywords,
     scores: insight.scores,
   };
 };

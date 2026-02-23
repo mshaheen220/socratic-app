@@ -2,6 +2,7 @@ import React, { useMemo } from 'react';
 import {
   LineChart, Line, BarChart, Bar, PieChart, Pie, Cell, RadialBarChart, RadialBar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer
 } from 'recharts';
+import { TagCloud } from 'react-tagcloud';
 import { THINKING_ERRORS } from '../constants/thinkingErrors';
 import { COGNITIVE_DISTORTIONS } from '../constants/cognitiveDisorders';
 import Card from './Card';
@@ -17,6 +18,7 @@ const Analytics = ({ entries }) => {
     let scoreCount = 0;
     let distortionSessions = 0;
     let stressorSessions = 0;
+    const keywordCounts = {};
 
     entries.forEach(entry => {
       if (entry.type === 'stressor') {
@@ -46,6 +48,13 @@ const Analytics = ({ entries }) => {
           totalEfficacy += effectiveness;
           scoreCount++;
         }
+      }
+
+      if (entry.aiKeywords && Array.isArray(entry.aiKeywords)) {
+        entry.aiKeywords.forEach(word => {
+          const key = word.toLowerCase();
+          keywordCounts[key] = (keywordCounts[key] || 0) + 1;
+        });
       }
     });
 
@@ -84,6 +93,11 @@ const Analytics = ({ entries }) => {
       .filter(e => typeof e.intensity === 'number' && typeof e.efficacy === 'number')
       .sort((a, b) => a.timestamp - b.timestamp);
 
+    const wordCloudData = Object.entries(keywordCounts)
+      .map(([value, count]) => ({ value, count }))
+      .sort((a, b) => b.count - a.count)
+      .slice(0, 40);
+
     return { 
       sortedDistortions, 
       sortedErrors, 
@@ -94,7 +108,8 @@ const Analytics = ({ entries }) => {
       avgEfficacy: scoreCount ? Math.round(totalEfficacy / scoreCount) : 0,
       hasScores: scoreCount > 0,
       chartData,
-      hasDistortions: totalDistortions > 0
+      hasDistortions: totalDistortions > 0,
+      wordCloudData
     };
   }, [entries]);
 
@@ -139,6 +154,21 @@ const Analytics = ({ entries }) => {
             </div>
           ) : (
             <p className="empty-text">No score data yet.</p>
+          )}
+        </Card>
+
+        <Card title="Topic Cloud">
+          {stats.wordCloudData.length > 0 ? (
+            <div className="tag-cloud-container">
+              <TagCloud
+                minSize={14}
+                maxSize={35}
+                tags={stats.wordCloudData}
+                className="simple-cloud"
+              />
+            </div>
+          ) : (
+            <p className="empty-text">No keywords generated yet.</p>
           )}
         </Card>
 
