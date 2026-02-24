@@ -23,7 +23,7 @@ function AppContent() {
   const [isGenerating, setIsGenerating] = useState(false);
 
   const initialSessionState = {
-    type: 'distortion', // 'distortion' | 'stressor'
+    type: 'distortion', // 'distortion' | 'stressor' | 'worry'
     thought: '',
     selectedErrors: [],
     selectedDistortions: [],
@@ -38,12 +38,16 @@ function AppContent() {
     worstCase: '',
     worstCasePlan: '',
     controlIn: '',
-    controlOut: ''
+    controlOut: '',
+    // Worry Tree Schema
+    worryType: '', // 'current' | 'hypothetical'
+    worryActionable: '', // 'yes' | 'no'
+    worryPlan: '' // Action plan or distraction technique
   };
 
   const [session, setSession] = useState(initialSessionState);
 
-  const totalSteps = session.type === 'stressor' ? 4 : 6;
+  const totalSteps = session.type === 'stressor' ? 4 : (session.type === 'worry' ? 4 : 6);
 
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme);
@@ -187,10 +191,10 @@ function AppContent() {
           {/* Step 1: Shared Thought Identification */}
           {step === 1 && (
             <QuestionStep 
-              label={session.type === 'stressor' ? "1. What is the stressful situation?" : "1. Thought I want to question:"}
+              label={session.type === 'stressor' ? "1. What is the stressful situation?" : (session.type === 'worry' ? "1. What are you worried about?" : "1. Thought I want to question:")}
               value={session.thought}
               onChange={(v) => setSession({...session, thought: v})}
-              placeholder={session.type === 'stressor' ? "Describe the difficult situation you are facing." : "Identifying the specific negative thought."}
+              placeholder={session.type === 'stressor' ? "Describe the difficult situation you are facing." : (session.type === 'worry' ? "Describe the specific worry on your mind." : "Identifying the specific negative thought.")}
             />
           )}
 
@@ -320,6 +324,66 @@ function AppContent() {
                 <textarea className="w-full p-3 border rounded" rows="3" placeholder="What is OUT of my control?" value={session.controlOut} onChange={(e) => setSession({...session, controlOut: e.target.value})} />
               </div>
             </>
+          )}
+
+          {/* WORRY TREE WORKFLOW STEPS */}
+          {session.type === 'worry' && step === 2 && (
+            <MultiSelectStep 
+              label="2. What kind of worry is this?"
+              description="Is this about a current problem you can act on, or a hypothetical 'what if'?"
+              options={[
+                { id: 'current', label: 'Current Problem', description: 'Something happening now or very soon that requires attention.' },
+                { id: 'hypothetical', label: 'Hypothetical Situation', description: 'A "What if...?" scenario about the future that may not happen.' }
+              ]}
+              value={session.worryType}
+              onChange={(val) => setSession({...session, worryType: val})}
+              singleSelect={true}
+            />
+          )}
+
+          {session.type === 'worry' && step === 3 && (
+            session.worryType === 'hypothetical' ? (
+              <div className="mb-6">
+                <label className="block text-gray-700 font-bold mb-2">3. Let it go</label>
+                <p className="text-sm text-gray-500 mb-4">Since this is hypothetical, there is nothing to solve right now. The best approach is to shift your focus.</p>
+                <QuestionStep 
+                  label="How will you shift your attention?"
+                  value={session.worryPlan}
+                  onChange={(v) => setSession({...session, worryPlan: v})}
+                  placeholder="e.g., Go for a walk, call a friend, focus on my breathing, 5-4-3-2-1 technique."
+                />
+              </div>
+            ) : (
+              <MultiSelectStep 
+                label="3. Can you do something about it?"
+                description="Is there an action you can take to resolve or improve this?"
+                options={[
+                  { id: 'yes', label: 'Yes, I can act', description: 'There are concrete steps I can take.' },
+                  { id: 'no', label: 'No, it is out of my control', description: 'I have to wait or accept the outcome.' }
+                ]}
+                value={session.worryActionable}
+                onChange={(val) => setSession({...session, worryActionable: val})}
+                singleSelect={true}
+              />
+            )
+          )}
+
+          {session.type === 'worry' && step === 4 && (
+            session.worryType === 'current' && session.worryActionable === 'yes' ? (
+              <QuestionStep 
+                label="4. Action Plan"
+                value={session.worryPlan}
+                onChange={(v) => setSession({...session, worryPlan: v})}
+                placeholder="What will you do? Will you do it now, or schedule it for later?"
+              />
+            ) : (
+              <QuestionStep 
+                label="4. Acceptance Strategy"
+                value={session.worryPlan}
+                onChange={(v) => setSession({...session, worryPlan: v})}
+                placeholder="Since you cannot control this, how will you practice acceptance or self-care?"
+              />
+            )
           )}
 
           <div className="nav-buttons">

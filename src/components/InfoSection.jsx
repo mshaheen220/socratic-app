@@ -16,13 +16,14 @@ const InfoSection = ({ defaultExpanded = false }) => {
       {showInfo && (
         <div className="info-content">
           <h3>About Socratic Restructuring</h3>
-          <p>This tool helps you navigate difficult thoughts and situations using principles from Cognitive Behavioral Therapy (CBT). It helps you distinguish between <strong>distorted thoughts</strong> (which need challenging) and <strong>valid stressors</strong> (which need coping strategies).</p>
+          <p>This tool helps you navigate difficult thoughts and situations using principles from Cognitive Behavioral Therapy (CBT). It helps you distinguish between <strong>distorted thoughts</strong> (which need challenging), <strong>valid stressors</strong> (which need coping strategies), and <strong>worries</strong> (which need a plan or acceptance).</p>
           
           <h4>How to use it</h4>
           <ol>
-            <li><strong>Triage your thought:</strong> Decide if you are dealing with a <em>Distortion</em> (an irrational thought) or a <em>Stressor</em> (a difficult reality).</li>
+            <li><strong>Triage your thought:</strong> Decide if you are dealing with a <em>Distortion</em>, a <em>Stressor</em>, or a <em>Worry</em>.</li>
             <li><strong>For Distortions:</strong> Use Socratic Questioning to examine the evidence and find a more balanced perspective.</li>
             <li><strong>For Stressors:</strong> Use Radical Acceptance and Control Audits to create a resilient coping plan.</li>
+            <li><strong>For Worries:</strong> Use the Worry Tree to determine if a problem is hypothetical (let it go) or current (make a plan).</li>
             <li><strong>Receive AI Analysis:</strong> Get a custom summary and actionable advice based on your inputs.</li>
           </ol>
 

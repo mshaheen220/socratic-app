@@ -7,10 +7,12 @@ const SessionDetails = ({ session, onClose }) => {
   if (!session) return null;
 
   const isStressor = session.type === 'stressor';
-  const title = isStressor ? 'Stressor Details' : 'Distortion Details';
+  const isWorry = session.type === 'worry';
+  const title = isStressor ? 'Stressor Details' : (isWorry ? 'Worry Tree Details' : 'Distortion Details');
   const typeTooltip = isStressor 
     ? "Valid Stressor: A real, difficult situation requiring coping and acceptance." 
-    : "Cognitive Distortion: A biased thought pattern requiring logical challenging.";
+    : (isWorry ? "Worry Tree: A decision-making tool to handle current problems or let go of hypothetical worries." 
+    : "Cognitive Distortion: A biased thought pattern requiring logical challenging.");
 
   // Helper to display label for single-select IDs
   const getLabel = (val, options) => {
@@ -27,8 +29,8 @@ const SessionDetails = ({ session, onClose }) => {
 
   return (
     <div className="modal-overlay" onClick={onClose}>
-      <div className={`modal-content ${isStressor ? 'stressor' : 'distortion'}`} onClick={e => e.stopPropagation()}>
-        <div className={`modal-header ${isStressor ? 'stressor' : 'distortion'}`}>
+      <div className={`modal-content ${isStressor ? 'stressor' : (isWorry ? 'worry' : 'distortion')}`} onClick={e => e.stopPropagation()}>
+        <div className={`modal-header ${isStressor ? 'stressor' : (isWorry ? 'worry' : 'distortion')}`}>
           <Tooltip text={typeTooltip}>
             <h2 className="session-type-title">{title}</h2>
           </Tooltip>
@@ -41,12 +43,12 @@ const SessionDetails = ({ session, onClose }) => {
           </div>
 
           <div className="detail-group">
-            <label>{isStressor ? 'Situation' : 'Thought'}</label>
+            <label>{isStressor ? 'Situation' : (isWorry ? 'Worry' : 'Thought')}</label>
             <p className="highlight-text">{session.thought}</p>
           </div>
 
           {(session.aiSummary || session.aiBalancedThought || session.aiCopingPlan || session.aiScores || session.aiKeywords) ? (
-            <div className={`ai-analysis-card ${isStressor ? 'stressor' : 'distortion'}`}>
+            <div className={`ai-analysis-card ${isStressor ? 'stressor' : (isWorry ? 'worry' : 'distortion')}`}>
               <h3 className="ai-title">AI Analysis</h3>
               
               {session.aiSummary && (
@@ -99,7 +101,7 @@ const SessionDetails = ({ session, onClose }) => {
               )}
             </div>
           ) : session.aiInsight && (
-            <div className={`ai-analysis-card ${isStressor ? 'stressor' : 'distortion'}`}>
+            <div className={`ai-analysis-card ${isStressor ? 'stressor' : (isWorry ? 'worry' : 'distortion')}`}>
               <label className="ai-label">AI Insight</label>
               <div dangerouslySetInnerHTML={{ __html: session.aiInsight }} />
             </div>
@@ -115,6 +117,12 @@ const SessionDetails = ({ session, onClose }) => {
               <div className="detail-group"><label>Action Plan</label><p>{session.worstCasePlan || '-'}</p></div>
               <div className="detail-group"><label>In My Control</label><p>{session.controlIn || '-'}</p></div>
               <div className="detail-group"><label>Out of My Control</label><p>{session.controlOut || '-'}</p></div>
+            </div>
+          ) : isWorry ? (
+            <div className="detail-grid">
+              <div className="detail-group"><label>Type</label><p>{getLabel(session.worryType, [{id:'current', label:'Current Problem'}, {id:'hypothetical', label:'Hypothetical'}])}</p></div>
+              <div className="detail-group"><label>Actionable</label><p>{getLabel(session.worryActionable, [{id:'yes', label:'Yes'}, {id:'no', label:'No'}])}</p></div>
+              <div className="detail-group" style={{ gridColumn: '1 / -1' }}><label>Plan / Strategy</label><p>{session.worryPlan || '-'}</p></div>
             </div>
           ) : (
             <>

@@ -2,6 +2,7 @@
   --primary: #4f46e5;
   --primary-hover: #4338ca;
   --secondary: #db2777;
+  --teal: #0d9488;
   --bg: #f3f4f6;
   --surface: #ffffff;
   --text: #1f2937;
@@ -20,6 +21,8 @@
   --primary-dark: #3730a3;
   --secondary-light: #fce7f3;
   --secondary-dark: #831843;
+  --teal-light: #ccfbf1;
+  --teal-dark: #115e59;
   
   /* Status colors */
   --success: #059669;
@@ -39,6 +42,7 @@
   --primary: #6366f1;
   --primary-hover: #818cf8;
   --secondary: #ec4899;
+  --teal: #14b8a6;
   --bg: #111827;
   --surface: #1f2937;
   --text: #f9fafb;
@@ -55,6 +59,8 @@
   --primary-dark: #e0e7ff;
   --secondary-light: #831843;
   --secondary-dark: #fce7f3;
+  --teal-light: #115e59;
+  --teal-dark: #ccfbf1;
 
   --success: #10b981;
   --success-hover: #059669;
@@ -277,6 +283,14 @@ textarea:focus {
   border-color: var(--secondary);
 }
 
+.journal-card.worry {
+  border-left: 4px solid var(--teal);
+}
+
+.journal-card.worry:hover {
+  border-color: var(--teal);
+}
+
 .card-header {
   display: flex;
   justify-content: space-between;
@@ -354,6 +368,10 @@ textarea:focus {
   border-top: 8px solid var(--secondary);
 }
 
+.modal-content.worry {
+  border-top: 8px solid var(--teal);
+}
+
 .modal-header {
   display: flex;
   justify-content: space-between;
@@ -374,6 +392,10 @@ textarea:focus {
 
 .modal-header.stressor h2 {
   color: var(--secondary);
+}
+
+.modal-header.worry h2 {
+  color: var(--teal);
 }
 
 .session-type-title {
@@ -823,6 +845,15 @@ textarea:focus {
   color: var(--secondary-dark);
 }
 
+.ai-analysis-card.worry {
+  background-color: var(--teal-light);
+}
+
+.ai-analysis-card.worry .ai-title,
+.ai-analysis-card.worry .ai-label {
+  color: var(--teal-dark);
+}
+
 .ai-title {
   color: var(--ai-text);
   margin-top: 0;
@@ -954,7 +985,12 @@ textarea:focus {
   cursor: pointer;
   padding: 2rem;
   border: 2px solid transparent;
-  transition: transform 0.2s, box-shadow 0.2s;
+  transition: all 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 280px;
 }
 
 .triage-card.distortion {
@@ -973,12 +1009,44 @@ textarea:focus {
   background-color: var(--secondary-light);
 }
 
+.triage-card.worry {
+  border-color: var(--teal);
+}
+
+.triage-card.worry:hover {
+  background-color: var(--teal-light);
+}
+
+.triage-icon {
+  font-size: 3.5rem;
+  margin-bottom: 0.5rem;
+  transition: transform 0.3s ease;
+}
+
+.triage-card:hover .triage-icon {
+  transform: scale(0.9);
+}
+
+.triage-details {
+  max-height: 0;
+  opacity: 0;
+  overflow: hidden;
+  transition: max-height 0.4s ease-out, opacity 0.4s ease-out, margin 0.4s ease;
+}
+
+.triage-card:hover .triage-details {
+  max-height: 500px;
+  opacity: 1;
+  margin-top: 1rem;
+}
+
 .triage-card h3 {
   margin-top: 0;
 }
 
 .triage-card.distortion h3 { color: var(--primary); }
 .triage-card.stressor h3 { color: var(--secondary); }
+.triage-card.worry h3 { color: var(--teal); }
 
 .triage-card ul {
   text-align: left;

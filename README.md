@@ -1,6 +1,6 @@
 # Socratic Restructuring App
 
-A personal cognitive behavioral therapy (CBT) tool designed to help users navigate difficult thoughts and situations. It helps you distinguish between **distorted thoughts** (which need challenging) and **valid stressors** (which need coping strategies).
+A personal cognitive behavioral therapy (CBT) tool designed to help users navigate difficult thoughts and situations. It helps you distinguish between **distorted thoughts** (which need challenging), **valid stressors** (which need coping strategies), and **worries** (which need decision-making).
 
 ## What is this for?
 
@@ -8,13 +8,14 @@ This application guides you through a structured process based on CBT principles
 
 1.  **Cognitive Restructuring** for irrational thoughts (Distortions).
 2.  **Coping & Resilience** for difficult realities (Stressors).
+3.  **Worry Tree** for managing anxiety and uncertainty (Worries).
 
 Key features include:
-- **Thought Triage**: Quickly categorize thoughts as Distortions or Stressors.
+- **Thought Triage**: Quickly categorize thoughts as Distortions, Stressors, or Worries.
 - **Guided Workflows**: Tailored step-by-step forms for Socratic Questioning or Radical Acceptance.
 - **AI Analysis**: Get custom summaries, balanced thoughts, and coping plans powered by Google Gemini.
 - **Thinking Error Identification**: Interactive selection of common cognitive distortions (e.g., Fortune Telling, Mind Reading).
-- **Dashboard & Analytics**: Track sessions, visualize trends, and see word clouds of your common themes.
+- **Dashboard & Analytics**: Track sessions, visualize trends, see word clouds, and analyze worry outcomes.
 - **Local Privacy**: All data is stored in your browser's LocalStorage, ensuring your thoughts remain private on your device.
 
 ## When to use it?
@@ -26,6 +27,8 @@ Use this app when you catch yourself feeling:
 - Upset by a specific situation and want to **check if your reaction aligns with the facts**.
 - **Overwhelmed by a difficult reality** that you cannot change (Valid Stressor).
 - **Powerless** in a situation and need to identify what is actually in your control.
+- **Stuck in "What if..." loops** about hypothetical future events.
+- **Unsure** if a problem is something you can solve right now or need to let go.
 
 ## Technical Overview
 
@@ -40,6 +43,7 @@ The app uses the **`@google/generative-ai`** SDK to communicate with Google's Ge
 - **Prompts**: The app constructs prompts based on the user's workflow.
   - *Distortions*: Sends the thought, evidence, and errors to request a **Balanced Thought** and **Efficacy Score**.
   - *Stressors*: Sends the situation, radical acceptance, and control audit to request a **Coping Plan** and **Resilience Score**.
+  - *Worry Tree*: Sends the worry type (current/hypothetical) and plan to request a **Coping Strategy** and **Resilience Score**.
 
 ### Data & Privacy
 - **Local Storage**: All sessions are stored in your browser's `localStorage`. **Your data never leaves your device** (except to be processed by the AI API) and is not stored in any central database.

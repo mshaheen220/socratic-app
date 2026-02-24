@@ -31,6 +31,19 @@ const ThoughtTriage = ({ onSelect, onCancel }) => {
             <li>"I can't afford rent this month."</li>
           </ul>
         </Card>
+
+        <Card 
+          className="triage-card worry" 
+          onClick={() => onSelect('worry')}
+        >
+          <h3>Worry Tree</h3>
+          <p>I am feeling anxious about something. I need to figure out if I can solve it or if I need to let it go.</p>
+          <ul>
+            <li>"What if I get sick?"</li>
+            <li>"I have so much to do tomorrow."</li>
+            <li>"I'm worried about the presentation."</li>
+          </ul>
+        </Card>
       </div>
       <div className="triage-actions">
         <button onClick={onCancel} className="nav-btn secondary">Cancel</button>

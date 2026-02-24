@@ -15,14 +15,31 @@ const Analytics = ({ entries }) => {
     let totalErrors = 0;
     let totalIntensity = 0;
     let totalEfficacy = 0;
+    let totalResilience = 0;
     let scoreCount = 0;
+    let efficacyCount = 0;
+    let resilienceCount = 0;
     let distortionSessions = 0;
     let stressorSessions = 0;
+    let worrySessions = 0;
     const keywordCounts = {};
+    const worryBreakdown = [
+      { name: 'Hypothetical', value: 0, fill: '#9ca3af' }, // Gray
+      { name: 'Actionable', value: 0, fill: '#4f46e5' },   // Indigo
+      { name: 'Acceptance', value: 0, fill: '#14b8a6' }    // Teal
+    ];
 
     entries.forEach(entry => {
       if (entry.type === 'stressor') {
         stressorSessions++;
+      } else if (entry.type === 'worry') {
+        worrySessions++;
+        if (entry.worryType === 'hypothetical') {
+          worryBreakdown[0].value++;
+        } else if (entry.worryType === 'current') {
+          if (entry.worryActionable === 'yes') worryBreakdown[1].value++;
+          else if (entry.worryActionable === 'no') worryBreakdown[2].value++;
+        }
       } else {
         distortionSessions++;
       }
@@ -42,11 +59,16 @@ const Analytics = ({ entries }) => {
       
       const scores = entry.aiScores;
       if (scores && typeof scores.intensity === 'number') {
-        const effectiveness = scores.efficacy ?? scores.resilience;
-        if (typeof effectiveness === 'number') {
-          totalIntensity += scores.intensity;
-          totalEfficacy += effectiveness;
-          scoreCount++;
+        totalIntensity += scores.intensity;
+        scoreCount++;
+
+        if (typeof scores.efficacy === 'number') {
+          totalEfficacy += scores.efficacy;
+          efficacyCount++;
+        }
+        if (typeof scores.resilience === 'number') {
+          totalResilience += scores.resilience;
+          resilienceCount++;
         }
       }
 
@@ -81,16 +103,16 @@ const Analytics = ({ entries }) => {
     const chartData = entries
       .map(e => {
         const scores = e.aiScores || {};
-        const effectiveness = scores.efficacy ?? scores.resilience;
         return {
           id: e.id,
           date: new Date(e.id).toLocaleDateString(undefined, { month: 'short', day: 'numeric' }),
           timestamp: e.id,
           intensity: scores.intensity,
-          efficacy: effectiveness
+          efficacy: scores.efficacy,
+          resilience: scores.resilience
         };
       })
-      .filter(e => typeof e.intensity === 'number' && typeof e.efficacy === 'number')
+      .filter(e => typeof e.intensity === 'number')
       .sort((a, b) => a.timestamp - b.timestamp);
 
     const wordCloudData = Object.entries(keywordCounts)
@@ -104,9 +126,15 @@ const Analytics = ({ entries }) => {
       totalSessions: entries.length,
       distortionSessions,
       stressorSessions,
+      worrySessions,
+      worryBreakdown,
+      hasWorry: worrySessions > 0,
       avgIntensity: scoreCount ? Math.round(totalIntensity / scoreCount) : 0,
-      avgEfficacy: scoreCount ? Math.round(totalEfficacy / scoreCount) : 0,
+      avgEfficacy: efficacyCount ? Math.round(totalEfficacy / efficacyCount) : 0,
+      avgResilience: resilienceCount ? Math.round(totalResilience / resilienceCount) : 0,
       hasScores: scoreCount > 0,
+      hasEfficacy: efficacyCount > 0,
+      hasResilience: resilienceCount > 0,
       chartData,
       hasDistortions: totalDistortions > 0,
       wordCloudData
@@ -127,6 +155,10 @@ const Analytics = ({ entries }) => {
               <span style={{ display: 'block', fontSize: '1.25rem', fontWeight: '700', color: 'var(--secondary)' }}>{stats.stressorSessions}</span>
               <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>Stressors</span>
             </div>
+            <div style={{ textAlign: 'center' }}>
+              <span style={{ display: 'block', fontSize: '1.25rem', fontWeight: '700', color: 'var(--teal)' }}>{stats.worrySessions}</span>
+              <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>Worry Tree</span>
+            </div>
           </div>
         </Card>
 
@@ -142,15 +174,28 @@ const Analytics = ({ entries }) => {
                   <div className="chart-bar-fill" style={{ width: `${stats.avgIntensity}%`, backgroundColor: 'var(--warning)' }}></div>
                 </div>
               </div>
+              {stats.hasEfficacy && (
               <div>
                 <div className="chart-label">
-                  <span>Efficacy / Resilience</span>
+                  <span>Efficacy (Distortions)</span>
                   <span>{stats.avgEfficacy}</span>
                 </div>
                 <div className="chart-bar-bg">
                   <div className="chart-bar-fill" style={{ width: `${stats.avgEfficacy}%`, backgroundColor: 'var(--success)' }}></div>
                 </div>
               </div>
+              )}
+              {stats.hasResilience && (
+              <div>
+                <div className="chart-label">
+                  <span>Resilience (Stressors/Worry)</span>
+                  <span>{stats.avgResilience}</span>
+                </div>
+                <div className="chart-bar-bg">
+                  <div className="chart-bar-fill" style={{ width: `${stats.avgResilience}%`, backgroundColor: 'var(--teal)' }}></div>
+                </div>
+              </div>
+              )}
             </div>
           ) : (
             <p className="empty-text">No score data yet.</p>
@@ -186,8 +231,9 @@ const Analytics = ({ entries }) => {
                     itemStyle={{ color: 'var(--text)' }} 
                   />
                   <Legend />
-                  <Line type="monotone" dataKey="intensity" stroke="#f59e0b" fill="none" name="Intensity" strokeWidth={2} activeDot={{ r: 6 }} dot={{ r: 4 }} />
-                  <Line type="monotone" dataKey="efficacy" stroke="#059669" fill="none" name="Efficacy / Resilience" strokeWidth={2} activeDot={{ r: 6 }} dot={{ r: 4 }} />
+                  <Line type="monotone" dataKey="intensity" stroke="#f59e0b" fill="none" name="Intensity" strokeWidth={2} activeDot={{ r: 6 }} dot={{ r: 4 }} connectNulls />
+                  <Line type="monotone" dataKey="efficacy" stroke="#059669" fill="none" name="Efficacy" strokeWidth={2} activeDot={{ r: 6 }} dot={{ r: 4 }} connectNulls />
+                  <Line type="monotone" dataKey="resilience" stroke="#0d9488" fill="none" name="Resilience" strokeWidth={2} activeDot={{ r: 6 }} dot={{ r: 4 }} connectNulls />
                 </LineChart>
               </ResponsiveContainer>
             </div>
@@ -195,6 +241,32 @@ const Analytics = ({ entries }) => {
             <p className="empty-text">Not enough data for trends (need at least 2 sessions with scores).</p>
           )}
         </Card>
+
+        {stats.hasWorry && (
+          <Card title="Worry Tree Outcomes">
+            <div style={{ width: '100%', height: 300 }}>
+              <ResponsiveContainer>
+                <PieChart>
+                  <Pie
+                    data={stats.worryBreakdown}
+                    cx="50%"
+                    cy="50%"
+                    innerRadius={60}
+                    outerRadius={80}
+                    paddingAngle={5}
+                    dataKey="value"
+                  >
+                    {stats.worryBreakdown.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={entry.fill} />
+                    ))}
+                  </Pie>
+                  <Tooltip contentStyle={{ backgroundColor: 'var(--surface)', borderColor: 'var(--border)', color: 'var(--text)' }} itemStyle={{ color: 'var(--text)' }} />
+                  <Legend />
+                </PieChart>
+              </ResponsiveContainer>
+            </div>
+          </Card>
+        )}
 
         <Card title="Cognitive Distortions Breakdown">
           {stats.hasDistortions ? (
