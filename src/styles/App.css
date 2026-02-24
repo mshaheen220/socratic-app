@@ -3,6 +3,7 @@
   --primary-hover: #4338ca;
   --secondary: #db2777;
   --teal: #0d9488;
+  --orange: #f97316;
   --bg: #f3f4f6;
   --surface: #ffffff;
   --text: #1f2937;
@@ -23,6 +24,8 @@
   --secondary-dark: #831843;
   --teal-light: #ccfbf1;
   --teal-dark: #115e59;
+  --orange-light: #ffedd5;
+  --orange-dark: #9a3412;
   
   /* Status colors */
   --success: #059669;
@@ -43,6 +46,7 @@
   --primary-hover: #818cf8;
   --secondary: #ec4899;
   --teal: #14b8a6;
+  --orange: #fb923c;
   --bg: #111827;
   --surface: #1f2937;
   --text: #f9fafb;
@@ -61,6 +65,8 @@
   --secondary-dark: #fce7f3;
   --teal-light: #115e59;
   --teal-dark: #ccfbf1;
+  --orange-light: #9a3412;
+  --orange-dark: #ffedd5;
 
   --success: #10b981;
   --success-hover: #059669;
@@ -291,6 +297,14 @@ textarea:focus {
   border-color: var(--teal);
 }
 
+.journal-card.mood {
+  border-left: 4px solid var(--orange);
+}
+
+.journal-card.mood:hover {
+  border-color: var(--orange);
+}
+
 .card-header {
   display: flex;
   justify-content: space-between;
@@ -372,6 +386,10 @@ textarea:focus {
   border-top: 8px solid var(--teal);
 }
 
+.modal-content.mood {
+  border-top: 8px solid var(--orange);
+}
+
 .modal-header {
   display: flex;
   justify-content: space-between;
@@ -396,6 +414,10 @@ textarea:focus {
 
 .modal-header.worry h2 {
   color: var(--teal);
+}
+
+.modal-header.mood h2 {
+  color: var(--orange);
 }
 
 .session-type-title {
@@ -854,6 +876,15 @@ textarea:focus {
   color: var(--teal-dark);
 }
 
+.ai-analysis-card.mood {
+  background-color: var(--orange-light);
+}
+
+.ai-analysis-card.mood .ai-title,
+.ai-analysis-card.mood .ai-label {
+  color: var(--orange-dark);
+}
+
 .ai-title {
   color: var(--ai-text);
   margin-top: 0;
@@ -1017,6 +1048,14 @@ textarea:focus {
   background-color: var(--teal-light);
 }
 
+.triage-card.mood {
+  border-color: var(--orange);
+}
+
+.triage-card.mood:hover {
+  background-color: var(--orange-light);
+}
+
 .triage-icon {
   font-size: 3.5rem;
   margin-bottom: 0.5rem;
@@ -1047,6 +1086,7 @@ textarea:focus {
 .triage-card.distortion h3 { color: var(--primary); }
 .triage-card.stressor h3 { color: var(--secondary); }
 .triage-card.worry h3 { color: var(--teal); }
+.triage-card.mood h3 { color: var(--orange); }
 
 .triage-card ul {
   text-align: left;

@@ -14,6 +14,7 @@ export const generateSessionInsight = async (session) => {
   // Define System Instructions based on Session Type
   const isStressor = session.type === 'stressor';
   const isWorry = session.type === 'worry';
+  const isMood = session.type === 'mood';
   
   const STANDARD_TOPICS = "Work & Career, Relationships, Family, Health & Body, Self-Esteem, Finances, Social Interactions, Future & Anxiety, Past & Trauma, Daily Life";
 
@@ -50,6 +51,23 @@ Analyze the user's worry and their plan. Return ONLY a JSON object with the foll
 }
 
 Do not include any conversational filler or markdown code blocks. Return only the raw JSON string.`
+    : isMood ? `Act as a compassionate CBT therapist focusing on Emotional Regulation.
+
+Analyze the user's mood reset session. Return ONLY a JSON object with the following keys:
+
+{
+  "AIsummary": "An empathetic HTML-formatted summary (starting with <div class='AIsummary'>) validating the emotion and the effort to regulate.",
+  "AIcopingPlan": "A suggestion of 1-2 specific grounding or regulation techniques (e.g. 5-4-3-2-1, Box Breathing, Container Exercise) in HTML (starting with <div class='AIcopingPlan'>). Explain briefly how to do them.",
+  "suggestedTechniques": ["Array of strings naming the specific techniques suggested (e.g. 'Box Breathing', '5-4-3-2-1')"],
+  "keywords": ["Array of 5-7 keywords. IMPORTANT: The first keyword MUST be selected from this standard list: [${STANDARD_TOPICS}]."],
+  "scores": {
+    "intensity": [An integer 1-100 representing the initial distress],
+    "resilience": [An integer 1-100 representing the potential effectiveness of the suggested technique for this situation],
+    "scoreExplanation": "HTML explanation."
+  }
+}
+
+Do not include any conversational filler or markdown code blocks. Return only the raw JSON string.`
     : `Act as a compassionate CBT therapist. I have completed a Socratic questioning exercise based on the Socratic Questioning, Cognitive Distortions, and Thinking Errors worksheets from TherapistAid.com.
 
 Based on CBT principles, analyze the user's entry and return ONLY a JSON object with the following keys:
@@ -78,7 +96,7 @@ Do not include any conversational filler or markdown code blocks. Return only th
     return ids.map(id => source.find(i => i.id === id)?.label || id).join(', ');
   };
 
-  const prompt = (!isStressor && !isWorry) ? `
+  const prompt = (!isStressor && !isWorry && !isMood) ? `
   My Input Data:
     - Negative Thought: "${session.thought}"
     - Thinking Errors: ${getLabels(session.selectedErrors, THINKING_ERRORS)}
@@ -97,12 +115,17 @@ Do not include any conversational filler or markdown code blocks. Return only th
     - Action Plan for Worst Case: "${session.worstCasePlan}"
     - In My Control: "${session.controlIn}"
     - Out of My Control: "${session.controlOut}"
-  ` : `
+  ` : isWorry ? `
   My Input Data (Worry Tree):
     - Worry: "${session.thought}"
     - Type: "${session.worryType}" (Current Problem vs Hypothetical)
     - Actionable: "${session.worryActionable}"
     - User's Plan: "${session.worryPlan}"
+  ` : `
+  My Input Data (Mood Reset):
+    - Event/Emotion: "${session.thought}"
+    - Explanation: "${session.moodExplanation}"
+    - Intensity Before: "${session.moodIntensityBefore}"
   `;
 
   const result = await model.generateContent(prompt);
@@ -120,5 +143,6 @@ Do not include any conversational filler or markdown code blocks. Return only th
     copingPlan: insight.AIcopingPlan,
     keywords: insight.keywords,
     scores: insight.scores,
+    suggestedTechniques: insight.suggestedTechniques,
   };
 };

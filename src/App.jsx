@@ -23,7 +23,7 @@ function AppContent() {
   const [isGenerating, setIsGenerating] = useState(false);
 
   const initialSessionState = {
-    type: 'distortion', // 'distortion' | 'stressor' | 'worry'
+    type: 'distortion', // 'distortion' | 'stressor' | 'worry' | 'mood'
     thought: '',
     selectedErrors: [],
     selectedDistortions: [],
@@ -42,12 +42,15 @@ function AppContent() {
     // Worry Tree Schema
     worryType: '', // 'current' | 'hypothetical'
     worryActionable: '', // 'yes' | 'no'
-    worryPlan: '' // Action plan or distraction technique
+    worryPlan: '', // Action plan or distraction technique
+    // Mood Reset Schema
+    moodIntensityBefore: 5,
+    moodExplanation: ''
   };
 
   const [session, setSession] = useState(initialSessionState);
 
-  const totalSteps = session.type === 'stressor' ? 4 : (session.type === 'worry' ? 4 : 6);
+  const totalSteps = session.type === 'stressor' ? 4 : (session.type === 'worry' ? 4 : (session.type === 'mood' ? 2 : 6));
 
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme);
@@ -88,6 +91,7 @@ function AppContent() {
       aiBalancedThought: aiData?.balancedThought,
       aiCopingPlan: aiData?.copingPlan,
       aiKeywords: aiData?.keywords,
+      aiSuggestedTechniques: aiData?.suggestedTechniques,
       aiScores: aiData?.scores,
       id: Date.now()
     };
@@ -138,6 +142,12 @@ function AppContent() {
 
   const toggleTheme = () => {
     setTheme(prev => prev === 'light' ? 'dark' : 'light');
+  };
+
+  const getIntensityColor = (val) => {
+    if (val <= 3) return 'var(--success)';
+    if (val <= 7) return 'var(--warning)';
+    return 'var(--danger)';
   };
 
   // Ensure history is an array to prevent crashes if local storage is corrupted
@@ -191,10 +201,10 @@ function AppContent() {
           {/* Step 1: Shared Thought Identification */}
           {step === 1 && (
             <QuestionStep 
-              label={session.type === 'stressor' ? "1. What is the stressful situation?" : (session.type === 'worry' ? "1. What are you worried about?" : "1. Thought I want to question:")}
+              label={session.type === 'stressor' ? "1. What is the stressful situation?" : (session.type === 'worry' ? "1. What are you worried about?" : (session.type === 'mood' ? "1. What event or emotion do you need to reset?" : "1. Thought I want to question:"))}
               value={session.thought}
               onChange={(v) => setSession({...session, thought: v})}
-              placeholder={session.type === 'stressor' ? "Describe the difficult situation you are facing." : (session.type === 'worry' ? "Describe the specific worry on your mind." : "Identifying the specific negative thought.")}
+              placeholder={session.type === 'stressor' ? "Describe the difficult situation you are facing." : (session.type === 'worry' ? "Describe the specific worry on your mind." : (session.type === 'mood' ? "e.g., 'I had a bad meeting' or 'I feel overwhelmed'." : "Identifying the specific negative thought."))}
             />
           )}
 
@@ -384,6 +394,38 @@ function AppContent() {
                 placeholder="Since you cannot control this, how will you practice acceptance or self-care?"
               />
             )
+          )}
+
+          {/* MOOD RESET WORKFLOW STEPS */}
+          {session.type === 'mood' && step === 2 && (
+            <>
+              <div className="mb-6">
+                <label className="block text-gray-700 font-bold mb-2">2a. Explanation</label>
+                <textarea 
+                  className="w-full p-3 border rounded mb-3" 
+                  rows="3" 
+                  placeholder="Briefly explain what happened or how you are feeling." 
+                  value={session.moodExplanation} 
+                  onChange={(e) => setSession({...session, moodExplanation: e.target.value})} 
+                />
+              </div>
+              <div className="mb-6">
+                <label className="block text-gray-700 font-bold mb-2">2b. Current Intensity: <span style={{ color: getIntensityColor(session.moodIntensityBefore) }}>{session.moodIntensityBefore}</span></label>
+                <input 
+                  type="range" 
+                  min="0" 
+                  max="10" 
+                  value={session.moodIntensityBefore} 
+                  onChange={(e) => setSession({...session, moodIntensityBefore: parseInt(e.target.value)})}
+                  className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
+                  style={{ accentColor: getIntensityColor(session.moodIntensityBefore), width: '100%' }}
+                />
+                <div className="flex justify-between text-xs text-gray-500 mt-1" style={{ display: 'flex', justifyContent: 'space-between' }}>
+                  <span>0 (Calm)</span>
+                  <span>10 (Maximum Distress)</span>
+                </div>
+              </div>
+            </>
           )}
 
           <div className="nav-buttons">
