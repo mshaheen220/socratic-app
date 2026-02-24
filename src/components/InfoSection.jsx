@@ -15,7 +15,7 @@ const InfoSection = ({ defaultExpanded = false }) => {
       
       {showInfo && (
         <div className="info-content">
-          <h3>About Socratic Restructuring</h3>
+          <h3>About Mindframe</h3>
           <p>This tool helps you navigate difficult thoughts and situations using principles from Cognitive Behavioral Therapy (CBT). It helps you distinguish between <strong>distorted thoughts</strong> (which need challenging), <strong>valid stressors</strong> (which need coping strategies), <strong>worries</strong> (which need a plan or acceptance), and <strong>moods</strong> (which need regulation).</p>
           
           <h4>How to use it</h4>

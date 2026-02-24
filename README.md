@@ -1,4 +1,6 @@
-# Socratic Restructuring App
+# Mindframe
+
+> Structure your thoughts. Reframe your reality.
 
 A personal cognitive behavioral therapy (CBT) tool designed to help users navigate difficult thoughts and situations. It helps you distinguish between **distorted thoughts** (which need challenging), **valid stressors** (which need coping strategies), **worries** (which need decision-making), and **moods** (which need regulation).
 
@@ -6,7 +8,7 @@ A personal cognitive behavioral therapy (CBT) tool designed to help users naviga
 
 This application guides you through a structured process based on CBT principles. It helps you triage your thoughts and choose the right path:
 
-1.  **Cognitive Restructuring** for irrational thoughts (Distortions).
+1.  **Socratic Restructuring** for irrational thoughts (Distortions).
 2.  **Coping & Resilience** for difficult realities (Stressors).
 3.  **Worry Tree** for managing anxiety and uncertainty (Worries).
 4.  **Mood Reset** for emotional regulation and grounding (Moods).

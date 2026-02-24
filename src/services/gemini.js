@@ -146,3 +146,35 @@ Do not include any conversational filler or markdown code blocks. Return only th
     suggestedTechniques: insight.suggestedTechniques,
   };
 };
+
+export const getTriageRecommendation = async (userInput) => {
+  const apiKey = import.meta.env.VITE_GOOGLE_API_KEY;
+  if (!apiKey) throw new Error("Please add VITE_GOOGLE_API_KEY to your .env file");
+
+  const genAI = new GoogleGenerativeAI(apiKey);
+  const model = genAI.getGenerativeModel({
+    model: "gemini-2.5-flash-lite",
+    generationConfig: { responseMimeType: "application/json" }
+  });
+
+  const prompt = `Act as a CBT therapist. Analyze the user's input and categorize it into one of 4 workflows:
+  1. 'distortion': Irrational thoughts, cognitive distortions, or negative self-talk that needs challenging.
+  2. 'stressor': Valid, objective difficult situations that require coping or acceptance.
+  3. 'worry': Anxious "what if" thoughts about the future or hypothetical scenarios.
+  4. 'mood': Intense emotional or physical reactions (anger, panic) that need immediate regulation/grounding.
+
+  User Input: "${userInput}"
+
+  Return ONLY a JSON object with these keys:
+  {
+    "type": "distortion" | "stressor" | "worry" | "mood",
+    "reason": "A brief explanation of why this category fits best."
+  }`;
+
+  const result = await model.generateContent(prompt);
+  const text = result.response.text();
+  
+  // Clean up potential markdown
+  const jsonString = text.replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/, '');
+  return JSON.parse(jsonString);
+};
