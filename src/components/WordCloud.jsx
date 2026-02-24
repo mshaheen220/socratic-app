@@ -41,11 +41,11 @@ const WordCloud = ({ words, font = '"Inter", -apple-system, BlinkMacSystemFont, 
     const maxVal = Math.max(...words.map(w => w.value));
     const sizeScale = d3.scaleLinear()
       .domain([0, maxVal])
-      .range([10, 40]); // Font size range
+      .range([1, 40]); // Font size range
 
     const layout = cloud()
       .size([width, height])
-      .words(words.map(d => ({ text: d.text, size: d.value })))
+      .words(words.map(d => ({ text: d.text, size: d.value, value: d.value })))
       .padding(2)
       .rotate(() => (Math.floor(Math.random() * 9) * 24) - 60)
       .font(font)
@@ -55,7 +55,7 @@ const WordCloud = ({ words, font = '"Inter", -apple-system, BlinkMacSystemFont, 
     layout.start();
 
     function draw(drawnWords) {
-      g.selectAll("text")
+      const textNodes = g.selectAll("text")
         .data(drawnWords)
         .enter().append("text")
         .style("font-size", "1px")
@@ -63,8 +63,21 @@ const WordCloud = ({ words, font = '"Inter", -apple-system, BlinkMacSystemFont, 
         .style("fill", (d, i) => d3.schemeCategory10[i % 10])
         .attr("text-anchor", "middle")
         .attr("transform", d => `translate(${d.x},${d.y})rotate(${d.rotate})`)
-        .text(d => d.text)
-        .transition()
+        .text(d => d.text);
+
+      // Add tooltip
+      textNodes.append("title").text(d => `${d.text}: ${d.value}`);
+
+      // Add hover effects
+      textNodes.on("mouseover", function(event, d) {
+        d3.select(this).transition().duration(200).style("font-size", (d.size * 1.1) + "px").style("opacity", 0.7).style("cursor", "default");
+      })
+      .on("mouseout", function(event, d) {
+        d3.select(this).transition().duration(200).style("font-size", d.size + "px").style("opacity", 1);
+      });
+
+      // Initial animation
+      textNodes.transition()
         .duration(600)
         .style("font-size", d => d.size + "px");
     }
