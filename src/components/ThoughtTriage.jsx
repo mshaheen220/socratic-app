@@ -11,7 +11,6 @@ const ThoughtTriage = ({ onSelect, onCancel }) => {
           onClick={() => onSelect('distortion')}
         >
           <h3>Distortion / Bias</h3>
-          <div className="triage-icon">🧠</div>
           <div className="triage-details">
             <p>My thought might be exaggerated, irrational, or untrue. I need to challenge it with facts and logic.</p>
             <ul>
@@ -27,7 +26,6 @@ const ThoughtTriage = ({ onSelect, onCancel }) => {
           onClick={() => onSelect('stressor')}
         >
           <h3>Valid Stressor</h3>
-          <div className="triage-icon">🌪️</div>
           <div className="triage-details">
             <p>The situation is real, difficult, and objectively true. I need to find a way to cope and move forward.</p>
             <ul>
@@ -43,7 +41,6 @@ const ThoughtTriage = ({ onSelect, onCancel }) => {
           onClick={() => onSelect('worry')}
         >
           <h3>Worry Tree</h3>
-          <div className="triage-icon">🌳</div>
           <div className="triage-details">
             <p>I am feeling anxious about something. I need to figure out if I can solve it or if I need to let it go.</p>
             <ul>
@@ -59,7 +56,6 @@ const ThoughtTriage = ({ onSelect, onCancel }) => {
           onClick={() => onSelect('mood')}
         >
           <h3>Mood Reset</h3>
-          <div className="triage-icon">🧘</div>
           <div className="triage-details">
             <p>I need to "quarantine" a bad event or emotion so it doesn't ruin my day. I need to regulate my nervous system.</p>
             <ul>
