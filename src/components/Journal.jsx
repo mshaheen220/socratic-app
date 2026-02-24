@@ -77,7 +77,7 @@ const Journal = ({ entries, onViewEntry, onDeleteEntry }) => {
   const processedEntries = getProcessedEntries();
   
   const showDistortionFilters = filters.type === 'all' || filters.type === 'distortion';
-  const efficacyLabel = (filters.type === 'stressor' || filters.type === 'worry') ? 'Resilience' : (filters.type === 'distortion' ? 'Efficacy' : 'Efficacy / Resilience');
+  const efficacyLabel = (filters.type === 'stressor' || filters.type === 'worry' || filters.type === 'mood') ? 'Resilience' : (filters.type === 'distortion' ? 'Efficacy' : 'Efficacy / Resilience');
 
   return (
     <div className="journal">
@@ -156,6 +156,12 @@ const Journal = ({ entries, onViewEntry, onDeleteEntry }) => {
                     >
                       Worry Tree
                     </button>
+                    <button
+                      onClick={() => setFilters({...filters, type: 'mood', errors: [], distortions: []})}
+                      className={`filter-tag ${filters.type === 'mood' ? 'active' : ''}`}
+                    >
+                      Mood Reset
+                    </button>
                   </div>
                 </div>
 
@@ -220,12 +226,13 @@ const Journal = ({ entries, onViewEntry, onDeleteEntry }) => {
             ) : processedEntries.map(entry => {
               const isStressor = entry.type === 'stressor';
               const isWorry = entry.type === 'worry';
+              const isMood = entry.type === 'mood';
               return (
-            <Card key={entry.id} className={`journal-card ${isStressor ? 'stressor' : (isWorry ? 'worry' : 'distortion')}`} onClick={() => onViewEntry(entry)}>
+            <Card key={entry.id} className={`journal-card ${isStressor ? 'stressor' : (isWorry ? 'worry' : (isMood ? 'mood' : 'distortion'))}`} onClick={() => onViewEntry(entry)}>
               <div className="card-header">
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                  <span className="card-badge" style={{ backgroundColor: isStressor ? 'var(--secondary)' : (isWorry ? 'var(--teal)' : 'var(--primary)'), color: 'white' }}>
-                    {isStressor ? 'Stressor' : (isWorry ? 'Worry' : 'Distortion')}
+                  <span className="card-badge" style={{ backgroundColor: isStressor ? 'var(--secondary)' : (isWorry ? 'var(--teal)' : (isMood ? 'var(--orange)' : 'var(--primary)')), color: 'white' }}>
+                    {isStressor ? 'Stressor' : (isWorry ? 'Worry' : (isMood ? 'Mood' : 'Distortion'))}
                   </span>
                   <span className="card-date">{new Date(entry.id).toLocaleDateString()}</span>
                 </div>
@@ -245,7 +252,7 @@ const Journal = ({ entries, onViewEntry, onDeleteEntry }) => {
               </div>
               <div className="card-thought">{entry.thought}</div>
               
-              {(isStressor || isWorry) && entry.aiCopingPlan ? (
+              {(isStressor || isWorry || isMood) && entry.aiCopingPlan ? (
                 <div className="balanced-thought-preview">
                   <div dangerouslySetInnerHTML={{ __html: entry.aiCopingPlan }} />
                 </div>
@@ -258,7 +265,15 @@ const Journal = ({ entries, onViewEntry, onDeleteEntry }) => {
               {entry.aiScores && (
                 <div className="scores-preview">
                   <span>Intensity: <b>{entry.aiScores.intensity}</b></span>
-                  <span>{(isStressor || isWorry) ? 'Resilience' : 'Efficacy'}: <b>{entry.aiScores.resilience || entry.aiScores.efficacy}</b></span>
+                  <span>{(isStressor || isWorry || isMood) ? 'Resilience' : 'Efficacy'}: <b>{entry.aiScores.resilience || entry.aiScores.efficacy}</b></span>
+                </div>
+              )}
+
+              {isMood && entry.aiSuggestedTechniques && entry.aiSuggestedTechniques.length > 0 && (
+                <div className="keywords-list">
+                  {entry.aiSuggestedTechniques.map((tech, i) => (
+                    <span key={i} className="keyword-pill" style={{ borderColor: 'var(--orange)', color: 'var(--orange-dark)' }}>{tech}</span>
+                  ))}
                 </div>
               )}
 

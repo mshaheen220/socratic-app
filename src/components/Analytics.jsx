@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import {
-  LineChart, Line, BarChart, Bar, PieChart, Pie, Cell, RadialBarChart, RadialBar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer
+  LineChart, Line, PieChart, Pie, Cell, RadialBarChart, RadialBar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer
 } from 'recharts';
 import WordCloud from './WordCloud';
 import { THINKING_ERRORS } from '../constants/thinkingErrors';
@@ -22,7 +22,9 @@ const Analytics = ({ entries }) => {
     let distortionSessions = 0;
     let stressorSessions = 0;
     let worrySessions = 0;
+    let moodSessions = 0;
     const keywordCounts = {};
+    const techniqueCounts = {};
     const worryBreakdown = [
       { name: 'Hypothetical', value: 0, fill: '#9ca3af' }, // Gray
       { name: 'Actionable', value: 0, fill: '#4f46e5' },   // Indigo
@@ -40,6 +42,8 @@ const Analytics = ({ entries }) => {
           if (entry.worryActionable === 'yes') worryBreakdown[1].value++;
           else if (entry.worryActionable === 'no') worryBreakdown[2].value++;
         }
+      } else if (entry.type === 'mood') {
+        moodSessions++;
       } else {
         distortionSessions++;
       }
@@ -76,6 +80,13 @@ const Analytics = ({ entries }) => {
         entry.aiKeywords.forEach(word => {
           const key = word.toLowerCase();
           keywordCounts[key] = (keywordCounts[key] || 0) + 1;
+        });
+      }
+
+      if (entry.aiSuggestedTechniques && Array.isArray(entry.aiSuggestedTechniques)) {
+        entry.aiSuggestedTechniques.forEach(tech => {
+          const t = tech.trim();
+          techniqueCounts[t] = (techniqueCounts[t] || 0) + 1;
         });
       }
     });
@@ -120,6 +131,11 @@ const Analytics = ({ entries }) => {
       .sort((a, b) => b.value - a.value)
       .slice(0, 40);
 
+    const sortedTechniques = Object.entries(techniqueCounts)
+      .map(([name, count]) => ({ name, count }))
+      .sort((a, b) => b.count - a.count)
+      .slice(0, 10);
+
     return { 
       sortedDistortions, 
       sortedErrors, 
@@ -127,6 +143,7 @@ const Analytics = ({ entries }) => {
       distortionSessions,
       stressorSessions,
       worrySessions,
+      moodSessions,
       worryBreakdown,
       hasWorry: worrySessions > 0,
       avgIntensity: scoreCount ? Math.round(totalIntensity / scoreCount) : 0,
@@ -137,7 +154,9 @@ const Analytics = ({ entries }) => {
       hasResilience: resilienceCount > 0,
       chartData,
       hasDistortions: totalDistortions > 0,
-      wordCloudData
+      wordCloudData,
+      sortedTechniques,
+      hasTechniques: sortedTechniques.length > 0
     };
   }, [entries]);
 
@@ -158,6 +177,10 @@ const Analytics = ({ entries }) => {
             <div style={{ textAlign: 'center' }}>
               <span style={{ display: 'block', fontSize: '1.25rem', fontWeight: '700', color: 'var(--teal)' }}>{stats.worrySessions}</span>
               <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>Worry Tree</span>
+            </div>
+            <div style={{ textAlign: 'center' }}>
+              <span style={{ display: 'block', fontSize: '1.25rem', fontWeight: '700', color: 'var(--orange)' }}>{stats.moodSessions}</span>
+              <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>Mood Reset</span>
             </div>
           </div>
         </Card>
@@ -264,6 +287,34 @@ const Analytics = ({ entries }) => {
                   <Legend />
                 </PieChart>
               </ResponsiveContainer>
+            </div>
+          </Card>
+        )}
+
+        {stats.hasTechniques && (
+          <Card title="Suggested Techniques">
+            <div className="chart-list">
+              {stats.sortedTechniques.map((tech, index) => {
+                const maxCount = stats.sortedTechniques[0]?.count || 1;
+                const percentage = (tech.count / maxCount) * 100;
+                return (
+                  <div key={index} className="chart-item">
+                    <div className="chart-label">
+                      <span style={{ fontWeight: 500 }}>{tech.name}</span>
+                      <span style={{ color: 'var(--text-secondary)' }}>{tech.count}</span>
+                    </div>
+                    <div className="chart-bar-bg">
+                      <div 
+                        className="chart-bar-fill" 
+                        style={{ 
+                          width: `${percentage}%`, 
+                          backgroundColor: 'var(--orange)' 
+                        }} 
+                      />
+                    </div>
+                  </div>
+                );
+              })}
             </div>
           </Card>
         )}
