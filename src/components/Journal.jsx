@@ -77,7 +77,7 @@ const Journal = ({ entries, onViewEntry, onDeleteEntry }) => {
   const processedEntries = getProcessedEntries();
   
   const showDistortionFilters = filters.type === 'all' || filters.type === 'distortion';
-  const efficacyLabel = filters.type === 'stressor' ? 'Resilience' : (filters.type === 'distortion' ? 'Efficacy' : 'Efficacy / Resilience');
+  const efficacyLabel = (filters.type === 'stressor' || filters.type === 'worry') ? 'Resilience' : (filters.type === 'distortion' ? 'Efficacy' : 'Efficacy / Resilience');
 
   return (
     <div className="journal">
@@ -150,6 +150,12 @@ const Journal = ({ entries, onViewEntry, onDeleteEntry }) => {
                     >
                       Stressors
                     </button>
+                    <button
+                      onClick={() => setFilters({...filters, type: 'worry', errors: [], distortions: []})}
+                      className={`filter-tag ${filters.type === 'worry' ? 'active' : ''}`}
+                    >
+                      Worry Tree
+                    </button>
                   </div>
                 </div>
 
@@ -213,12 +219,13 @@ const Journal = ({ entries, onViewEntry, onDeleteEntry }) => {
               </div>
             ) : processedEntries.map(entry => {
               const isStressor = entry.type === 'stressor';
+              const isWorry = entry.type === 'worry';
               return (
-            <Card key={entry.id} className={`journal-card ${isStressor ? 'stressor' : 'distortion'}`} onClick={() => onViewEntry(entry)}>
+            <Card key={entry.id} className={`journal-card ${isStressor ? 'stressor' : (isWorry ? 'worry' : 'distortion')}`} onClick={() => onViewEntry(entry)}>
               <div className="card-header">
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                  <span className="card-badge" style={{ backgroundColor: isStressor ? 'var(--secondary)' : 'var(--primary)', color: 'white' }}>
-                    {isStressor ? 'Stressor' : 'Distortion'}
+                  <span className="card-badge" style={{ backgroundColor: isStressor ? 'var(--secondary)' : (isWorry ? 'var(--teal)' : 'var(--primary)'), color: 'white' }}>
+                    {isStressor ? 'Stressor' : (isWorry ? 'Worry' : 'Distortion')}
                   </span>
                   <span className="card-date">{new Date(entry.id).toLocaleDateString()}</span>
                 </div>
@@ -238,7 +245,7 @@ const Journal = ({ entries, onViewEntry, onDeleteEntry }) => {
               </div>
               <div className="card-thought">{entry.thought}</div>
               
-              {isStressor && entry.aiCopingPlan ? (
+              {(isStressor || isWorry) && entry.aiCopingPlan ? (
                 <div className="balanced-thought-preview">
                   <div dangerouslySetInnerHTML={{ __html: entry.aiCopingPlan }} />
                 </div>
@@ -251,7 +258,7 @@ const Journal = ({ entries, onViewEntry, onDeleteEntry }) => {
               {entry.aiScores && (
                 <div className="scores-preview">
                   <span>Intensity: <b>{entry.aiScores.intensity}</b></span>
-                  <span>{isStressor ? 'Resilience' : 'Efficacy'}: <b>{entry.aiScores.resilience || entry.aiScores.efficacy}</b></span>
+                  <span>{(isStressor || isWorry) ? 'Resilience' : 'Efficacy'}: <b>{entry.aiScores.resilience || entry.aiScores.efficacy}</b></span>
                 </div>
               )}
 

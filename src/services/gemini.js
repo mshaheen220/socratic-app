@@ -13,6 +13,7 @@ export const generateSessionInsight = async (session) => {
   
   // Define System Instructions based on Session Type
   const isStressor = session.type === 'stressor';
+  const isWorry = session.type === 'worry';
   
   const STANDARD_TOPICS = "Work & Career, Relationships, Family, Health & Body, Self-Esteem, Finances, Social Interactions, Future & Anxiety, Past & Trauma, Daily Life";
 
@@ -29,6 +30,22 @@ Based on CBT and Resilience principles (Radical Acceptance, Decatastrophizing, C
     "intensity": [An integer 1-100 representing the severity/distress of the situation],
     "resilience": [An integer 1-100 representing how well the user's plan addresses the stressor],
     "scoreExplanation": "An HTML-formatted explanation of why these scores were assigned."
+  }
+}
+
+Do not include any conversational filler or markdown code blocks. Return only the raw JSON string.` 
+    : isWorry ? `Act as a compassionate CBT therapist using the "Worry Tree" technique.
+
+Analyze the user's worry and their plan. Return ONLY a JSON object with the following keys:
+
+{
+  "AIsummary": "An empathetic HTML-formatted summary (starting with <div class='AIsummary'>) validating the worry.",
+  "AIcopingPlan": "A suggestion in HTML (starting with <div class='AIcopingPlan'>). If the worry is hypothetical or not actionable, focus on distraction/mindfulness. If actionable, refine their action plan.",
+  "keywords": ["Array of 5-7 keywords. IMPORTANT: The first keyword MUST be selected from this standard list: [${STANDARD_TOPICS}]."],
+  "scores": {
+    "intensity": [An integer 1-100 representing the anxiety level],
+    "resilience": [An integer 1-100 representing the quality of their plan/acceptance],
+    "scoreExplanation": "HTML explanation of the scores."
   }
 }
 
@@ -61,7 +78,7 @@ Do not include any conversational filler or markdown code blocks. Return only th
     return ids.map(id => source.find(i => i.id === id)?.label || id).join(', ');
   };
 
-  const prompt = !isStressor ? `
+  const prompt = (!isStressor && !isWorry) ? `
   My Input Data:
     - Negative Thought: "${session.thought}"
     - Thinking Errors: ${getLabels(session.selectedErrors, THINKING_ERRORS)}
@@ -72,7 +89,7 @@ Do not include any conversational filler or markdown code blocks. Return only th
     - Alternative Interpretations: ${session.alternativeInterpretations}
     - Habit/Past Influence: ${Array.isArray(session.habitOrPast) ? session.habitOrPast.join(', ') : session.habitOrPast}
     - Likelihood vs Possibility: ${session.likelihoodVsPossibility}
-  ` : `
+  ` : isStressor ? `
   My Input Data (Valid Stressor):
     - Stressful Situation: "${session.thought}"
     - Radical Acceptance (Facts I cannot change): "${session.radicalAcceptance}"
@@ -80,6 +97,12 @@ Do not include any conversational filler or markdown code blocks. Return only th
     - Action Plan for Worst Case: "${session.worstCasePlan}"
     - In My Control: "${session.controlIn}"
     - Out of My Control: "${session.controlOut}"
+  ` : `
+  My Input Data (Worry Tree):
+    - Worry: "${session.thought}"
+    - Type: "${session.worryType}" (Current Problem vs Hypothetical)
+    - Actionable: "${session.worryActionable}"
+    - User's Plan: "${session.worryPlan}"
   `;
 
   const result = await model.generateContent(prompt);
