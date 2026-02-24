@@ -272,7 +272,7 @@ const Journal = ({ entries, onViewEntry, onDeleteEntry }) => {
               {isMood && entry.aiSuggestedTechniques && entry.aiSuggestedTechniques.length > 0 && (
                 <div className="keywords-list">
                   {entry.aiSuggestedTechniques.map((tech, i) => (
-                    <span key={i} className="keyword-pill" style={{ borderColor: 'var(--orange)', color: 'var(--orange-dark)' }}>{tech}</span>
+                    <span key={i} className="keyword-pill mood">{tech}</span>
                   ))}
                 </div>
               )}
