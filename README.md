@@ -1,6 +1,6 @@
 # Socratic Restructuring App
 
-A personal cognitive behavioral therapy (CBT) tool designed to help users navigate difficult thoughts and situations. It helps you distinguish between **distorted thoughts** (which need challenging), **valid stressors** (which need coping strategies), and **worries** (which need decision-making).
+A personal cognitive behavioral therapy (CBT) tool designed to help users navigate difficult thoughts and situations. It helps you distinguish between **distorted thoughts** (which need challenging), **valid stressors** (which need coping strategies), **worries** (which need decision-making), and **moods** (which need regulation).
 
 ## What is this for?
 
@@ -9,13 +9,14 @@ This application guides you through a structured process based on CBT principles
 1.  **Cognitive Restructuring** for irrational thoughts (Distortions).
 2.  **Coping & Resilience** for difficult realities (Stressors).
 3.  **Worry Tree** for managing anxiety and uncertainty (Worries).
+4.  **Mood Reset** for emotional regulation and grounding (Moods).
 
 Key features include:
-- **Thought Triage**: Quickly categorize thoughts as Distortions, Stressors, or Worries.
+- **Thought Triage**: Quickly categorize thoughts as Distortions, Stressors, Worries, or Moods.
 - **Guided Workflows**: Tailored step-by-step forms for Socratic Questioning or Radical Acceptance.
 - **AI Analysis**: Get custom summaries, balanced thoughts, and coping plans powered by Google Gemini.
 - **Thinking Error Identification**: Interactive selection of common cognitive distortions (e.g., Fortune Telling, Mind Reading).
-- **Dashboard & Analytics**: Track sessions, visualize trends, see word clouds, and analyze worry outcomes.
+- **Dashboard & Analytics**: Track sessions, visualize trends, see word clouds, analyze worry outcomes, and track technique usage.
 - **Local Privacy**: All data is stored in your browser's LocalStorage, ensuring your thoughts remain private on your device.
 
 ## When to use it?
@@ -29,6 +30,8 @@ Use this app when you catch yourself feeling:
 - **Powerless** in a situation and need to identify what is actually in your control.
 - **Stuck in "What if..." loops** about hypothetical future events.
 - **Unsure** if a problem is something you can solve right now or need to let go.
+- **Overwhelmed by an intense emotion** and need to "quarantine" it so it doesn't ruin your day.
+- **Physically shaken** by an event and need a grounding technique.
 
 ## Technical Overview
 
@@ -44,6 +47,7 @@ The app uses the **`@google/generative-ai`** SDK to communicate with Google's Ge
   - *Distortions*: Sends the thought, evidence, and errors to request a **Balanced Thought** and **Efficacy Score**.
   - *Stressors*: Sends the situation, radical acceptance, and control audit to request a **Coping Plan** and **Resilience Score**.
   - *Worry Tree*: Sends the worry type (current/hypothetical) and plan to request a **Coping Strategy** and **Resilience Score**.
+  - *Mood Reset*: Sends the event/emotion and intensity to request a **Suggested Technique** and **Resilience Score**.
 
 ### Data & Privacy
 - **Local Storage**: All sessions are stored in your browser's `localStorage`. **Your data never leaves your device** (except to be processed by the AI API) and is not stored in any central database.
