@@ -59,14 +59,14 @@
   --text-tertiary: #9ca3af;
   --bg-secondary: #111827;
   --border-dark: #4b5563;
-  --primary-light: #312e81;
-  --primary-dark: #e0e7ff;
-  --secondary-light: #831843;
-  --secondary-dark: #fce7f3;
-  --teal-light: #115e59;
-  --teal-dark: #ccfbf1;
-  --orange-light: #9a3412;
-  --orange-dark: #ffedd5;
+  --primary-light: #e0e7ff;
+  --primary-dark: #3730a3;
+  --secondary-light: #fce7f3;
+  --secondary-dark: #831843;
+  --teal-light: #ccfbf1;
+  --teal-dark: #115e59;
+  --orange-light: #ffedd5;
+  --orange-dark: #9a3412;
 
   --success: #10b981;
   --success-hover: #059669;
@@ -863,8 +863,18 @@ textarea:focus {
   border: 1px solid var(--border);
 }
 
+.keyword-pill.mood {
+  border-color: var(--orange);
+  color: var(--orange-dark);
+}
+
+[data-theme="dark"] .keyword-pill.mood {
+  color: var(--orange);
+}
+
 .ai-analysis-card.distortion {
   background-color: var(--primary-light);
+  color: var(--primary-dark);
 }
 
 .ai-analysis-card.distortion .ai-title,
@@ -874,6 +884,7 @@ textarea:focus {
 
 .ai-analysis-card.stressor {
   background-color: var(--secondary-light);
+  color: var(--secondary-dark);
 }
 
 .ai-analysis-card.stressor .ai-title,
@@ -883,6 +894,7 @@ textarea:focus {
 
 .ai-analysis-card.worry {
   background-color: var(--teal-light);
+  color: var(--teal-dark);
 }
 
 .ai-analysis-card.worry .ai-title,
@@ -892,6 +904,7 @@ textarea:focus {
 
 .ai-analysis-card.mood {
   background-color: var(--orange-light);
+  color: var(--orange-dark);
 }
 
 .ai-analysis-card.mood .ai-title,
@@ -923,15 +936,12 @@ textarea:focus {
 }
 
 .ai-score-badge {
-  background: var(--surface);
-  padding: 0.25rem 0.5rem;
-  border-radius: 4px;
   font-size: 0.9rem;
 }
 
 .ai-explanation {
   font-size: 0.9em;
-  color: var(--text-secondary);
+  color: inherit;
 }
 
 /* Analytics Styles */
@@ -1044,6 +1054,7 @@ textarea:focus {
 
 .triage-card.distortion:hover {
   background-color: var(--primary-light);
+  color: var(--primary-dark);
 }
 
 .triage-card.stressor {
@@ -1052,6 +1063,7 @@ textarea:focus {
 
 .triage-card.stressor:hover {
   background-color: var(--secondary-light);
+  color: var(--secondary-dark);
 }
 
 .triage-card.worry {
@@ -1060,6 +1072,7 @@ textarea:focus {
 
 .triage-card.worry:hover {
   background-color: var(--teal-light);
+  color: var(--teal-dark);
 }
 
 .triage-card.mood {
@@ -1068,6 +1081,7 @@ textarea:focus {
 
 .triage-card.mood:hover {
   background-color: var(--orange-light);
+  color: var(--orange-dark);
 }
 
 .triage-details {
@@ -1095,6 +1109,10 @@ textarea:focus {
   font-size: 0.9rem;
   color: var(--text-secondary);
   margin-top: 1rem;
+}
+
+.triage-card:hover ul {
+  color: inherit;
 }
 
 .triage-actions {
