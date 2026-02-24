@@ -1,13 +1,66 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Card from './Card';
+import { getTriageRecommendation } from '../services/gemini';
 
 const ThoughtTriage = ({ onSelect, onCancel }) => {
+  const [showHelp, setShowHelp] = useState(false);
+  const [helpInput, setHelpInput] = useState('');
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [recommendation, setRecommendation] = useState(null);
+
+  const handleAnalyze = async () => {
+    if (!helpInput.trim()) return;
+    setIsAnalyzing(true);
+    setRecommendation(null);
+    try {
+      const result = await getTriageRecommendation(helpInput);
+      setRecommendation(result);
+    } catch (error) {
+      console.error(error);
+      alert("Could not analyze. Please try again.");
+    } finally {
+      setIsAnalyzing(false);
+    }
+  };
+
   return (
     <div className="triage-container">
       <h2 className="triage-title">What kind of thought is this?</h2>
+      
+      <div className="triage-help-section">
+        {!showHelp ? (
+          <button onClick={() => setShowHelp(true)} className="text-btn">🤔 Not sure? Help me decide</button>
+        ) : (
+          <div className="help-box">
+            <p>Briefly describe what's on your mind:</p>
+            <div className="help-input-group">
+              <textarea 
+                value={helpInput} 
+                onChange={(e) => setHelpInput(e.target.value)} 
+                placeholder="e.g., I'm freaking out about a meeting..." 
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    handleAnalyze();
+                  }
+                }}
+                disabled={isAnalyzing}
+                rows={2}
+                maxLength={300}
+              />
+              <button onClick={handleAnalyze} disabled={isAnalyzing || !helpInput.trim()} className="nav-btn primary btn-sm">{isAnalyzing ? '...' : 'Analyze'}</button>
+            </div>
+            {recommendation && (
+              <div className="recommendation-result"><strong>Recommendation: {recommendation.type.toUpperCase()}</strong><p>{recommendation.reason}</p></div>
+            )}
+            <button onClick={() => { setShowHelp(false); setRecommendation(null); setHelpInput(''); }} className="close-help">&times;</button>
+          </div>
+        )}
+      </div>
+
       <div className="triage-grid">
         <Card 
-          className="triage-card distortion" 
+          className={`triage-card distortion ${recommendation?.type === 'distortion' ? 'recommended' : ''}`}
           onClick={() => onSelect('distortion')}
         >
           <h3>Distortion / Bias</h3>
@@ -22,7 +75,7 @@ const ThoughtTriage = ({ onSelect, onCancel }) => {
         </Card>
 
         <Card 
-          className="triage-card stressor" 
+          className={`triage-card stressor ${recommendation?.type === 'stressor' ? 'recommended' : ''}`}
           onClick={() => onSelect('stressor')}
         >
           <h3>Valid Stressor</h3>
@@ -37,7 +90,7 @@ const ThoughtTriage = ({ onSelect, onCancel }) => {
         </Card>
 
         <Card 
-          className="triage-card worry" 
+          className={`triage-card worry ${recommendation?.type === 'worry' ? 'recommended' : ''}`}
           onClick={() => onSelect('worry')}
         >
           <h3>Worry Tree</h3>
@@ -52,7 +105,7 @@ const ThoughtTriage = ({ onSelect, onCancel }) => {
         </Card>
 
         <Card 
-          className="triage-card mood" 
+          className={`triage-card mood ${recommendation?.type === 'mood' ? 'recommended' : ''}`}
           onClick={() => onSelect('mood')}
         >
           <h3>Mood Reset</h3>

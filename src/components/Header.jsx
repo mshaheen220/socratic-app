@@ -40,7 +40,10 @@ const Header = ({
     <div className="sticky-header">
       <div className="header-content">
         <div className="journal-header">
-          <h1 className="app-title journal-title">My Thoughts</h1>
+          <div>
+            <h1 className="app-title journal-title">Mindframe</h1>
+            <p className="header-tagline">Structure your thoughts. Reframe your reality.</p>
+          </div>
           <div className="journal-actions">
             <button 
               onClick={onViewJournal} 

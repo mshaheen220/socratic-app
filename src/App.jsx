@@ -150,6 +150,19 @@ function AppContent() {
     return 'var(--danger)';
   };
 
+  const getWorkflowInfo = () => {
+    switch (session.type) {
+      case 'stressor':
+        return { title: 'Valid Stressor', tagline: 'Build resilience for difficult situations.' };
+      case 'worry':
+        return { title: 'Worry Tree', tagline: 'Manage anxiety and uncertainty.' };
+      case 'mood':
+        return { title: 'Mood Reset', tagline: 'Regulate your emotions.' };
+      default:
+        return { title: 'Socratic Restructuring', tagline: 'Challenge your negative thoughts.' };
+    }
+  };
+
   // Ensure history is an array to prevent crashes if local storage is corrupted
   const safeHistory = Array.isArray(history) ? history : [];
 
@@ -192,11 +205,12 @@ function AppContent() {
             &times;
           </button>
           <h1 className="app-title">
-            Socratic Restructuring 
+            {getWorkflowInfo().title}
             <span style={{fontSize: '0.5em', color: '#6b7280', fontWeight: 'normal', marginLeft: '10px'}}>
               (Step {step} of {totalSteps})
             </span>
           </h1>
+          <p className="app-tagline">{getWorkflowInfo().tagline}</p>
           
           {/* Step 1: Shared Thought Identification */}
           {step === 1 && (

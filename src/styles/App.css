@@ -105,9 +105,23 @@ h1.app-title {
   font-weight: 800;
   color: var(--text-dark);
   margin-top: 0;
+  margin-bottom: 0.5rem;
+}
+
+.app-tagline {
+  margin-top: 0;
   margin-bottom: 2rem;
+  color: var(--text-secondary);
+  font-style: italic;
   border-bottom: 2px solid var(--border);
   padding-bottom: 1rem;
+}
+
+.header-tagline {
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  font-style: italic;
 }
 
 label, .section-label {
@@ -1093,4 +1107,86 @@ textarea:focus {
   justify-content: center;
   align-items: center;
   padding: 1rem 0;
+}
+
+.triage-help-section {
+  text-align: center;
+  margin-bottom: 2rem;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.text-btn {
+  background: none;
+  border: none;
+  color: var(--primary);
+  text-decoration: underline;
+  cursor: pointer;
+  font-size: 1rem;
+}
+
+.help-box {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  padding: 1.5rem;
+  border-radius: 8px;
+  position: relative;
+  box-shadow: var(--shadow);
+}
+
+.help-input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+  align-items: flex-end;
+}
+
+.help-input-group textarea {
+  width: 100%;
+  padding: 0.5rem;
+  border: 1px solid var(--border-dark);
+  border-radius: 6px;
+  resize: none;
+  font-family: inherit;
+}
+
+.recommendation-result {
+  margin-top: 1rem;
+  padding: 1rem;
+  background: var(--bg);
+  border-radius: 6px;
+  text-align: left;
+}
+
+.close-help {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: var(--text-secondary);
+}
+
+.triage-card.recommended {
+  border-width: 4px;
+  box-shadow: 0 0 20px rgba(0,0,0,0.15);
+  position: relative;
+}
+
+.triage-card.recommended::after {
+  content: "Recommended";
+  position: absolute;
+  top: -12px;
+  background: var(--text-dark);
+  color: var(--surface);
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: bold;
+  left: 50%;
+  transform: translateX(-50%);
 }
