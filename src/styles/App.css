@@ -319,6 +319,15 @@ textarea:focus {
   border-color: var(--orange);
 }
 
+.journal-card.draft {
+  border-left: 4px solid var(--text-tertiary);
+  background-color: var(--bg-secondary);
+}
+
+.journal-card.draft:hover {
+  border-color: var(--text-tertiary);
+}
+
 .card-header {
   display: flex;
   justify-content: space-between;
@@ -654,6 +663,16 @@ textarea:focus {
   background-color: var(--success-hover) !important;
 }
 
+.btn-quick-add {
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  flex: none;
+  font-size: 1.2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
 
 .btn-auto {
   width: auto;
@@ -1207,4 +1226,48 @@ textarea:focus {
   font-weight: bold;
   left: 50%;
   transform: translateX(-50%);
+}
+
+.quick-add-modal {
+  max-width: 500px;
+}
+
+.quick-add-textarea {
+  min-height: 150px;
+  margin-bottom: 1rem;
+  font-size: 1.1rem;
+}
+
+.quick-add-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+}
+
+.btn-mic {
+  background: var(--bg);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 1.2rem;
+  transition: all 0.2s;
+  flex: none;
+}
+
+.btn-mic:hover {
+  background: var(--border);
+}
+
+.btn-mic.listening {
+  background-color: var(--danger);
+  color: white;
+  border-color: var(--danger);
+  animation: pulse-red 1.5s infinite;
 }

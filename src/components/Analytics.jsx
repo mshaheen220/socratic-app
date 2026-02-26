@@ -31,7 +31,9 @@ const Analytics = ({ entries }) => {
       { name: 'Acceptance', value: 0, fill: '#14b8a6' }    // Teal
     ];
 
-    entries.forEach(entry => {
+    const completedEntries = entries.filter(e => e.type !== 'draft');
+
+    completedEntries.forEach(entry => {
       if (entry.type === 'stressor') {
         stressorSessions++;
       } else if (entry.type === 'worry') {
@@ -111,7 +113,7 @@ const Analytics = ({ entries }) => {
       })
       .sort((a, b) => b.count - a.count);
 
-    const chartData = entries
+    const chartData = completedEntries
       .map(e => {
         const scores = e.aiScores || {};
         return {
@@ -136,10 +138,17 @@ const Analytics = ({ entries }) => {
       .sort((a, b) => b.count - a.count)
       .slice(0, 10);
 
+    const sessionTypeData = [
+      { name: 'Distortions', value: distortionSessions, fill: '#4f46e5' },
+      { name: 'Stressors', value: stressorSessions, fill: '#db2777' },
+      { name: 'Worry Tree', value: worrySessions, fill: '#0d9488' },
+      { name: 'Mood Reset', value: moodSessions, fill: '#f97316' }
+    ].filter(d => d.value > 0);
+
     return { 
       sortedDistortions, 
       sortedErrors, 
-      totalSessions: entries.length,
+      totalSessions: completedEntries.length,
       distortionSessions,
       stressorSessions,
       worrySessions,
@@ -156,7 +165,8 @@ const Analytics = ({ entries }) => {
       hasDistortions: totalDistortions > 0,
       wordCloudData,
       sortedTechniques,
-      hasTechniques: sortedTechniques.length > 0
+      hasTechniques: sortedTechniques.length > 0,
+      sessionTypeData
     };
   }, [entries]);
 
@@ -164,23 +174,29 @@ const Analytics = ({ entries }) => {
     <div className="analytics-view">
       <div className="analytics-grid">
         <Card title="Total Sessions">
-          <div className="stat-big">{stats.totalSessions}</div>
-          <div style={{ display: 'flex', justifyContent: 'center', gap: '2rem', marginTop: '0.5rem' }}>
-            <div style={{ textAlign: 'center' }}>
-              <span style={{ display: 'block', fontSize: '1.25rem', fontWeight: '700', color: 'var(--primary)' }}>{stats.distortionSessions}</span>
-              <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>Distortions</span>
-            </div>
-            <div style={{ textAlign: 'center' }}>
-              <span style={{ display: 'block', fontSize: '1.25rem', fontWeight: '700', color: 'var(--secondary)' }}>{stats.stressorSessions}</span>
-              <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>Stressors</span>
-            </div>
-            <div style={{ textAlign: 'center' }}>
-              <span style={{ display: 'block', fontSize: '1.25rem', fontWeight: '700', color: 'var(--teal)' }}>{stats.worrySessions}</span>
-              <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>Worry Tree</span>
-            </div>
-            <div style={{ textAlign: 'center' }}>
-              <span style={{ display: 'block', fontSize: '1.25rem', fontWeight: '700', color: 'var(--orange)' }}>{stats.moodSessions}</span>
-              <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>Mood Reset</span>
+          <div style={{ width: '100%', height: 300, position: 'relative' }}>
+            <ResponsiveContainer>
+              <PieChart>
+                <Pie
+                  data={stats.sessionTypeData}
+                  cx="50%"
+                  cy="50%"
+                  innerRadius={60}
+                  outerRadius={80}
+                  paddingAngle={5}
+                  dataKey="value"
+                >
+                  {stats.sessionTypeData.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={entry.fill} />
+                  ))}
+                </Pie>
+                <Tooltip contentStyle={{ backgroundColor: 'var(--surface)', borderColor: 'var(--border)', color: 'var(--text)' }} itemStyle={{ color: 'var(--text)' }} />
+                <Legend />
+              </PieChart>
+            </ResponsiveContainer>
+            <div style={{ position: 'absolute', top: '42%', left: '50%', transform: 'translate(-50%, -50%)', textAlign: 'center', pointerEvents: 'none' }}>
+              <div className="stat-big" style={{ fontSize: '2.5rem', lineHeight: 1 }}>{stats.totalSessions}</div>
+              <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginTop: '0.25rem' }}>Total</div>
             </div>
           </div>
         </Card>
