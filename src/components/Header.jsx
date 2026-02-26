@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
 import Tooltip from './Tooltip';
 import InfoSection from './InfoSection';
 import { exportData } from '../utils';
@@ -11,11 +11,16 @@ const Header = ({
   onRecordBackup, 
   theme, 
   toggleTheme, 
+  onQuickAdd,
   onViewAnalytics,
   view,
   onViewJournal
 }) => {
   const fileInputRef = useRef(null);
+  const [showQuickAdd, setShowQuickAdd] = useState(false);
+  const [quickAddText, setQuickAddText] = useState('');
+  const [isListening, setIsListening] = useState(false);
+  const recognitionRef = useRef(null);
 
   const handleBackup = () => {
     exportData(entries);
@@ -28,6 +33,55 @@ const Header = ({
       onImport(file);
     }
     e.target.value = null;
+  };
+
+  const handleQuickAdd = () => {
+    setShowQuickAdd(true);
+  };
+
+  const handleSaveQuickAdd = () => {
+    if (quickAddText.trim()) {
+      onQuickAdd(quickAddText);
+      setQuickAddText('');
+      setShowQuickAdd(false);
+    }
+  };
+
+  const toggleListening = () => {
+    if (isListening) {
+      recognitionRef.current?.stop();
+      setIsListening(false);
+      return;
+    }
+
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SpeechRecognition) {
+      alert("Speech recognition is not supported in this browser.");
+      return;
+    }
+
+    const recognition = new SpeechRecognition();
+    recognition.continuous = true;
+    recognition.interimResults = false;
+    recognition.lang = 'en-US';
+
+    recognition.onstart = () => setIsListening(true);
+    recognition.onend = () => setIsListening(false);
+    recognition.onerror = (event) => {
+      console.error("Speech recognition error", event.error);
+      setIsListening(false);
+    };
+
+    recognition.onresult = (event) => {
+      const current = event.resultIndex;
+      const transcript = event.results[current][0].transcript;
+      if (event.results[current].isFinal) {
+        setQuickAddText(prev => prev + (prev.length > 0 && !prev.endsWith(' ') ? ' ' : '') + transcript);
+      }
+    };
+
+    recognitionRef.current = recognition;
+    recognition.start();
   };
 
   const latestEntry = entries.length > 0 ? entries[entries.length - 1] : null;
@@ -74,6 +128,11 @@ const Header = ({
             >
               {theme === 'light' ? '🌙' : '☀️'}
             </button>
+            <Tooltip text="Quick Add Thought">
+              <button onClick={handleQuickAdd} className="nav-btn secondary btn-quick-add">
+                ⚡
+              </button>
+            </Tooltip>
             <button onClick={onNewSession} className="nav-btn primary btn-new-session">
               New Session
             </button>
@@ -82,6 +141,37 @@ const Header = ({
 
         <InfoSection defaultExpanded={entries.length === 0} />
       </div>
+
+      {showQuickAdd && (
+        <div className="modal-overlay" onClick={() => setShowQuickAdd(false)}>
+          <div className="modal-content quick-add-modal" onClick={e => e.stopPropagation()}>
+            <div className="modal-header">
+              <h2>Quick Add</h2>
+              <button onClick={() => setShowQuickAdd(false)} className="close-btn">&times;</button>
+            </div>
+            <textarea
+              className="quick-add-textarea"
+              value={quickAddText}
+              onChange={(e) => setQuickAddText(e.target.value)}
+              placeholder="What's on your mind?"
+              autoFocus
+            />
+            <div className="quick-add-actions">
+              <button 
+                onClick={toggleListening} 
+                className={`btn-mic ${isListening ? 'listening' : ''}`}
+                title={isListening ? "Stop Dictation" : "Start Dictation"}
+              >
+                {isListening ? '⏹️' : '🎤'}
+              </button>
+              <div style={{ display: 'flex', gap: '1rem', flex: 1, justifyContent: 'flex-end' }}>
+                <button onClick={() => setShowQuickAdd(false)} className="nav-btn secondary">Cancel</button>
+                <button onClick={handleSaveQuickAdd} className="nav-btn primary">Save</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

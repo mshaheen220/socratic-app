@@ -21,6 +21,7 @@ function AppContent() {
   const [selectedEntry, setSelectedEntry] = useState(null);
   const [step, setStep] = useState(1);
   const [isGenerating, setIsGenerating] = useState(false);
+  const [draftIdToReplace, setDraftIdToReplace] = useState(null);
 
   const initialSessionState = {
     type: 'distortion', // 'distortion' | 'stressor' | 'worry' | 'mood'
@@ -74,6 +75,21 @@ function AppContent() {
 
   const prevStep = () => setStep(s => Math.max(s - 1, 1));
 
+  const saveQuickThought = (text) => {
+    const newEntry = {
+      type: 'draft',
+      thought: text,
+      id: Date.now()
+    };
+    setHistory([...history, newEntry]);
+  };
+
+  const processDraft = (entry) => {
+    setSession({ ...initialSessionState, thought: entry.thought });
+    setDraftIdToReplace(entry.id);
+    setView('triage');
+  };
+
   const saveSession = async () => {
     if (!session.thought) return alert("Identify a thought first!");
 
@@ -93,9 +109,15 @@ function AppContent() {
       aiKeywords: aiData?.keywords,
       aiSuggestedTechniques: aiData?.suggestedTechniques,
       aiScores: aiData?.scores,
-      id: Date.now()
+      id: draftIdToReplace || Date.now()
     };
-    setHistory([...history, newEntry]);
+
+    if (draftIdToReplace) {
+      setHistory(history.map(h => h.id === draftIdToReplace ? newEntry : h));
+      setDraftIdToReplace(null);
+    } else {
+      setHistory([...history, newEntry]);
+    }
     setSession(initialSessionState);
     setStep(1);
     setView('journal');
@@ -112,6 +134,7 @@ function AppContent() {
   const cancelSession = () => {
     if (window.confirm('Are you sure you want to cancel? All progress in this session will be lost.')) {
       setSession(initialSessionState);
+      setDraftIdToReplace(null);
       setStep(1);
       setView('journal');
     }
@@ -177,6 +200,7 @@ function AppContent() {
           onRecordBackup={() => setLastBackup(Date.now())}
           theme={theme}
           toggleTheme={toggleTheme}
+          onQuickAdd={saveQuickThought}
           onViewAnalytics={() => setView('analytics')}
           view={view}
           onViewJournal={() => setView('journal')}
@@ -188,6 +212,7 @@ function AppContent() {
           entries={safeHistory} 
           onViewEntry={setSelectedEntry} 
           onDeleteEntry={deleteEntry}
+          onProcessDraft={processDraft}
         />
       ) : view === 'analytics' ? (
         <Analytics entries={safeHistory} />

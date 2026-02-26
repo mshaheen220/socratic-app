@@ -4,7 +4,7 @@ import { COGNITIVE_DISTORTIONS } from '../constants/cognitiveDisorders';
 import Tooltip from './Tooltip';
 import Card from './Card';
 
-const Journal = ({ entries, onViewEntry, onDeleteEntry }) => {
+const Journal = ({ entries, onViewEntry, onDeleteEntry, onProcessDraft }) => {
   const [sortBy, setSortBy] = useState('dateDesc');
   const [showFilters, setShowFilters] = useState(false);
   const [filters, setFilters] = useState({
@@ -162,6 +162,12 @@ const Journal = ({ entries, onViewEntry, onDeleteEntry }) => {
                     >
                       Mood Reset
                     </button>
+                    <button
+                      onClick={() => setFilters({...filters, type: 'draft', errors: [], distortions: []})}
+                      className={`filter-tag ${filters.type === 'draft' ? 'active' : ''}`}
+                    >
+                      Drafts
+                    </button>
                   </div>
                 </div>
 
@@ -227,12 +233,13 @@ const Journal = ({ entries, onViewEntry, onDeleteEntry }) => {
               const isStressor = entry.type === 'stressor';
               const isWorry = entry.type === 'worry';
               const isMood = entry.type === 'mood';
+              const isDraft = entry.type === 'draft';
               return (
-            <Card key={entry.id} className={`journal-card ${isStressor ? 'stressor' : (isWorry ? 'worry' : (isMood ? 'mood' : 'distortion'))}`} onClick={() => onViewEntry(entry)}>
+            <Card key={entry.id} className={`journal-card ${isStressor ? 'stressor' : (isWorry ? 'worry' : (isMood ? 'mood' : (isDraft ? 'draft' : 'distortion')))}`} onClick={() => isDraft ? onProcessDraft(entry) : onViewEntry(entry)}>
               <div className="card-header">
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                  <span className="card-badge" style={{ backgroundColor: isStressor ? 'var(--secondary)' : (isWorry ? 'var(--teal)' : (isMood ? 'var(--orange)' : 'var(--primary)')), color: 'white' }}>
-                    {isStressor ? 'Stressor' : (isWorry ? 'Worry' : (isMood ? 'Mood' : 'Distortion'))}
+                  <span className="card-badge" style={{ backgroundColor: isStressor ? 'var(--secondary)' : (isWorry ? 'var(--teal)' : (isMood ? 'var(--orange)' : (isDraft ? 'var(--text-tertiary)' : 'var(--primary)'))), color: 'white' }}>
+                    {isStressor ? 'Stressor' : (isWorry ? 'Worry' : (isMood ? 'Mood' : (isDraft ? 'Draft' : 'Distortion')))}
                   </span>
                   <span className="card-date">{new Date(entry.id).toLocaleDateString()}</span>
                 </div>
@@ -252,6 +259,12 @@ const Journal = ({ entries, onViewEntry, onDeleteEntry }) => {
               </div>
               <div className="card-thought">{entry.thought}</div>
               
+              {isDraft && (
+                <div style={{ marginTop: '1rem' }}>
+                  <button className="nav-btn primary btn-sm">Continue Processing →</button>
+                </div>
+              )}
+
               {(isStressor || isWorry || isMood) && entry.aiCopingPlan ? (
                 <div className="balanced-thought-preview">
                   <div dangerouslySetInnerHTML={{ __html: entry.aiCopingPlan }} />
