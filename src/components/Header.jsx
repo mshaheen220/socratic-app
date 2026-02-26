@@ -21,6 +21,7 @@ const Header = ({
   const [quickAddText, setQuickAddText] = useState('');
   const [isListening, setIsListening] = useState(false);
   const recognitionRef = useRef(null);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const handleBackup = () => {
     exportData(entries);
@@ -94,11 +95,12 @@ const Header = ({
     <div className="sticky-header">
       <div className="header-content">
         <div className="journal-header">
-          <div>
+          <div className="header-title-group">
             <h1 className="app-title journal-title">Mindframe</h1>
             <p className="header-tagline">Structure your thoughts. Reframe your reality.</p>
           </div>
           <div className="journal-actions">
+            <div className="desktop-actions">
             <button 
               onClick={onViewJournal} 
               className={`nav-btn btn-sm ${view === 'journal' ? 'primary' : 'secondary'}`}
@@ -136,8 +138,54 @@ const Header = ({
             <button onClick={onNewSession} className="nav-btn primary btn-new-session">
               New Session
             </button>
+            </div>
+
+            <div className="mobile-actions">
+              <Tooltip text="Quick Add Thought">
+                <button onClick={handleQuickAdd} className="nav-btn secondary btn-quick-add">
+                  ⚡
+                </button>
+              </Tooltip>
+              <button 
+                onClick={() => setIsMenuOpen(!isMenuOpen)} 
+                className="nav-btn secondary btn-sm hamburger-btn"
+                aria-label="Menu"
+              >
+                ☰
+              </button>
+            </div>
           </div>
         </div>
+
+        {isMenuOpen && (
+          <div className="mobile-menu">
+            <button onClick={() => { onNewSession(); setIsMenuOpen(false); }} className="nav-btn primary">
+              New Session
+            </button>
+            <button onClick={() => { onViewJournal(); setIsMenuOpen(false); }} className={`nav-btn ${view === 'journal' ? 'primary' : 'secondary'}`}>
+              Journal
+            </button>
+            <button onClick={() => { onViewAnalytics(); setIsMenuOpen(false); }} className={`nav-btn ${view === 'analytics' ? 'primary' : 'secondary'}`}>
+              Analytics
+            </button>
+            <div className="mobile-menu-row">
+              <button onClick={handleBackup} className={`nav-btn secondary btn-sm btn-backup ${hasUnsavedChanges ? 'pulse-alert' : ''}`} style={{ flex: 1 }}>
+                {hasUnsavedChanges && <span>⚠️</span>} Backup
+              </button>
+              <button onClick={() => { fileInputRef.current.click(); setIsMenuOpen(false); }} className="nav-btn secondary btn-sm" style={{ flex: 1 }}>
+                Import
+              </button>
+              <button 
+                className="theme-toggle" 
+                onClick={() => { toggleTheme(); setIsMenuOpen(false); }}
+                aria-label={theme === 'light' ? "Switch to dark mode" : "Switch to light mode"}
+                style={{ flex: 'none' }}
+              >
+                {theme === 'light' ? '🌙' : '☀️'}
+              </button>
+            </div>
+          </div>
+        )}
 
         <InfoSection defaultExpanded={entries.length === 0} />
       </div>
