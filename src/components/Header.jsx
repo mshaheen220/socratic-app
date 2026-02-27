@@ -19,8 +19,6 @@ const Header = ({
   const fileInputRef = useRef(null);
   const [showQuickAdd, setShowQuickAdd] = useState(false);
   const [quickAddText, setQuickAddText] = useState('');
-  const [isListening, setIsListening] = useState(false);
-  const recognitionRef = useRef(null);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const handleBackup = () => {
@@ -46,43 +44,6 @@ const Header = ({
       setQuickAddText('');
       setShowQuickAdd(false);
     }
-  };
-
-  const toggleListening = () => {
-    if (isListening) {
-      recognitionRef.current?.stop();
-      setIsListening(false);
-      return;
-    }
-
-    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-    if (!SpeechRecognition) {
-      alert("Speech recognition is not supported in this browser.");
-      return;
-    }
-
-    const recognition = new SpeechRecognition();
-    recognition.continuous = true;
-    recognition.interimResults = false;
-    recognition.lang = 'en-US';
-
-    recognition.onstart = () => setIsListening(true);
-    recognition.onend = () => setIsListening(false);
-    recognition.onerror = (event) => {
-      console.error("Speech recognition error", event.error);
-      setIsListening(false);
-    };
-
-    recognition.onresult = (event) => {
-      const current = event.resultIndex;
-      const transcript = event.results[current][0].transcript;
-      if (event.results[current].isFinal) {
-        setQuickAddText(prev => prev + (prev.length > 0 && !prev.endsWith(' ') ? ' ' : '') + transcript);
-      }
-    };
-
-    recognitionRef.current = recognition;
-    recognition.start();
   };
 
   const latestEntry = entries.length > 0 ? entries[entries.length - 1] : null;
@@ -205,13 +166,6 @@ const Header = ({
               autoFocus
             />
             <div className="quick-add-actions">
-              <button 
-                onClick={toggleListening} 
-                className={`btn-mic ${isListening ? 'listening' : ''}`}
-                title={isListening ? "Stop Dictation" : "Start Dictation"}
-              >
-                {isListening ? '⏹️' : '🎤'}
-              </button>
               <div style={{ display: 'flex', gap: '1rem', flex: 1, justifyContent: 'flex-end' }}>
                 <button onClick={() => setShowQuickAdd(false)} className="nav-btn secondary">Cancel</button>
                 <button onClick={handleSaveQuickAdd} className="nav-btn primary">Save</button>

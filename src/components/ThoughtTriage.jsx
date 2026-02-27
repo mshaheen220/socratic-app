@@ -2,9 +2,9 @@ import React, { useState } from 'react';
 import Card from './Card';
 import { getTriageRecommendation } from '../services/gemini';
 
-const ThoughtTriage = ({ onSelect, onCancel }) => {
+const ThoughtTriage = ({ onSelect, onCancel, initialThought }) => {
   const [showHelp, setShowHelp] = useState(false);
-  const [helpInput, setHelpInput] = useState('');
+  const [helpInput, setHelpInput] = useState(initialThought || '');
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [recommendation, setRecommendation] = useState(null);
 

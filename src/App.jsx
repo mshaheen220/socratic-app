@@ -217,7 +217,11 @@ function AppContent() {
       ) : view === 'analytics' ? (
         <Analytics entries={safeHistory} />
       ) : view === 'triage' ? (
-        <ThoughtTriage onSelect={handleTriageSelect} onCancel={() => setView('journal')} />
+        <ThoughtTriage 
+          onSelect={handleTriageSelect} 
+          onCancel={() => setView('journal')} 
+          initialThought={session.thought}
+        />
       ) : (
         <>
           <button 

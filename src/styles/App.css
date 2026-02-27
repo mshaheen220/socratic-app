@@ -1302,30 +1302,3 @@ textarea:focus {
   align-items: center;
   gap: 1rem;
 }
-
-.btn-mic {
-  background: var(--bg);
-  color: var(--text);
-  border: 1px solid var(--border);
-  border-radius: 50%;
-  width: 44px;
-  height: 44px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  font-size: 1.2rem;
-  transition: all 0.2s;
-  flex: none;
-}
-
-.btn-mic:hover {
-  background: var(--border);
-}
-
-.btn-mic.listening {
-  background-color: var(--danger);
-  color: white;
-  border-color: var(--danger);
-  animation: pulse-red 1.5s infinite;
-}
