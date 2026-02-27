@@ -15,6 +15,7 @@ This application guides you through a structured process based on CBT principles
 
 Key features include:
 - **Thought Triage**: Quickly categorize thoughts as Distortions, Stressors, Worries, or Moods.
+- **Quick Add**: Capture thoughts instantly and save them as drafts to process later.
 - **Guided Workflows**: Tailored step-by-step forms for Socratic Questioning or Radical Acceptance.
 - **AI Analysis**: Get custom summaries, balanced thoughts, and coping plans powered by Google Gemini.
 - **Thinking Error Identification**: Interactive selection of common cognitive distortions (e.g., Fortune Telling, Mind Reading).
