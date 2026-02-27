@@ -20,6 +20,7 @@ const InfoSection = ({ defaultExpanded = false }) => {
           
           <h4>How to use it</h4>
           <ol>
+            <li><strong>Quick Add (Optional):</strong> Capture a thought instantly and save it as a draft to process later.</li>
             <li><strong>Triage your thought:</strong> Decide if you are dealing with a <em>Distortion</em>, a <em>Stressor</em>, a <em>Worry</em>, or a <em>Mood</em>.</li>
             <li><strong>For Distortions:</strong> Use Socratic Questioning to examine the evidence and find a more balanced perspective.</li>
             <li><strong>For Stressors:</strong> Use Radical Acceptance and Control Audits to create a resilient coping plan.</li>
