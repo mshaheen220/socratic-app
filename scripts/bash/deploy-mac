@@ -9,12 +9,11 @@ npm install
 echo "🏗️ [DEV MAC] Compiling production-optimized static assets via Vite..."
 npm run build
 
-echo "🚀 [DEV MAC] Shipping pre-compiled 'dist' folder assets to TheForge..."
-# Syncs your freshly built dist folder directly to the server project directory
-scp -r ./dist michael@TheForge:/Users/michael/Documents/dev/socratic-app/
+echo "🚀 [DEV MAC] Syncing pre-compiled assets to TheForge via rsync..."
+# --delete makes sure any old, broken, or empty files on the server are vaporized
+rsync -avz --delete ./dist/ michael@TheForge:/Users/michael/Documents/dev/socratic-app/dist/
 
 echo "🔗 [DEV MAC] Remotely triggering the deployment process handler on TheForge..."
-# Executes the server-side bash script to verify or spin up the background process
 ssh michael@TheForge "bash /Users/michael/Documents/dev/socratic-app/scripts/bash/deploy-forge"
 
 echo "🎉 [DEV MAC] Deployment sequence completely finished!"
