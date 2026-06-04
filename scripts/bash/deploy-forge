@@ -1,25 +1,26 @@
 #!/bin/bash
 
+# Define local environmental properties
 TARGET_PORT=5174
 LOG_FILE="$HOME/mindframe.log"
 DIST_PATH="/Users/michael/Documents/dev/socratic-app/dist"
 
 echo "⚙️ [THEFORGE] Reviewing application background processes..."
 
-# Check if something is already hosting on our designated port
+# Check if a process is already bound to our designated port
 PID=$(lsof -t -i:$TARGET_PORT || true)
 
 if [ -n "$PID" ]; then
     echo "♻️ [THEFORGE] Active server detected on port $TARGET_PORT (PID: $PID). Refreshing static assets..."
-    # With static hosting, overwriting the dist folder updates the app instantly!
-    # We force a path cache rehash just to guarantee clean environment memory.
-    rehash
+    # Flush the Bash path environment memory cache cleanly
+    hash -r
 else
     echo "⚠️ [THEFORGE] No active listener found on port $TARGET_PORT. Initializing background server..."
-    # Launch serve on our port using nohup so it survives terminal disconnections
+    # Spin up npx serve in the background using nohup so it survives shell disconnection
     nohup npx serve -s "$DIST_PATH" -l $TARGET_PORT > "$LOG_FILE" 2>&1 &
-    rehash
+    # Flush the Bash path environment memory cache cleanly
+    hash -r
 fi
 
 echo "✅ [THEFORGE] Static site server successfully initialized on port $TARGET_PORT!"
-echo "🌐 [THEFORGE] Mindframe is securely live at socratic.theshaheens.info"
+echo "🌐 [THEFORGE] Mindframe is securely live at mindframe.theshaheens.info"
