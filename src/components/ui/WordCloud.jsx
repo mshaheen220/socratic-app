@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import * as d3 from 'd3';
 import cloud from 'd3-cloud';
 
@@ -81,10 +81,10 @@ const WordCloud = ({ words, font = '"Inter", -apple-system, BlinkMacSystemFont, 
         .duration(600)
         .style("font-size", d => d.size + "px");
     }
-  }, [words, dimensions]);
+  }, [words, dimensions, font]);
 
   return (
-    <div ref={containerRef} style={{ width: '100%', height: '100%' }} />
+    <div ref={containerRef} className="word-cloud-container" />
   );
 };
 

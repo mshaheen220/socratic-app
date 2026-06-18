@@ -20,7 +20,7 @@ Key features include:
 - **AI Analysis**: Get custom summaries, balanced thoughts, and coping plans powered by Google Gemini.
 - **Thinking Error Identification**: Interactive selection of common cognitive distortions (e.g., Fortune Telling, Mind Reading).
 - **Dashboard & Analytics**: Track sessions, visualize trends, see word clouds, analyze worry outcomes, and track technique usage.
-- **Local Privacy**: All data is stored in your browser's LocalStorage, ensuring your thoughts remain private on your device.
+- **Private & Secure**: Your data is tied to your private account and is not shared.
 
 ## When to use it?
 
@@ -39,12 +39,12 @@ Use this app when you catch yourself feeling:
 ## Technical Overview
 
 ### File Structure
-- **`src/components/`**: Contains all React UI components (e.g., `Journal.jsx`, `Analytics.jsx`, `ThoughtTriage.jsx`).
-- **`src/services/gemini.js`**: Handles interactions with the Google Gemini API.
-- **`src/constants/`**: Static definitions for Thinking Errors and Cognitive Distortions.
+- **`src/`**: Contains the React frontend application.
+- **`src/server/`**: A small Express.js backend API that manages user accounts and session data in a SQLite database.
 
 ### AI Integration
 The app uses the **`@google/generative-ai`** SDK to communicate with Google's Gemini models.
+
 - **System Instructions**: We use system instructions to define the AI's persona (CBT Therapist) and enforce a strict JSON output format.
 - **Prompts**: The app constructs prompts based on the user's workflow.
   - *Distortions*: Sends the thought, evidence, and errors to request a **Balanced Thought** and **Efficacy Score**.
@@ -53,9 +53,9 @@ The app uses the **`@google/generative-ai`** SDK to communicate with Google's Ge
   - *Mood Reset*: Sends the event/emotion and intensity to request a **Suggested Technique** and **Resilience Score**.
 
 ### Data & Privacy
-- **Local Storage**: All sessions are stored in your browser's `localStorage`. **Your data never leaves your device** (except to be processed by the AI API) and is not stored in any central database.
+- **Database Storage**: All sessions are stored in a private SQLite database, linked to your user account.
 - **Timestamps as IDs**: The application uses `Date.now()` to generate unique IDs for sessions. These timestamps are used to derive and display all dates in the Journal and Analytics views.
-- **Backup & Import**: Because data is local, clearing your browser cache will delete it. Use the **Backup** button to download a JSON file of your history, which can be **Imported** later or on a different device.
+- **Export & Import**: You can download a full JSON file of your history using the **Export** button, and use the **Import** button to add sessions from a file.
 
 ## Getting Started
 
@@ -87,13 +87,20 @@ VITE_GOOGLE_API_KEY=your_api_key_here
 
 ### Running Locally
 
-To start the development server:
+This project has a React frontend and an Express backend. You'll need to run both.
 
-```bash
-npm run dev
-```
+1. **Start the backend server:**
+   ```bash
+   npm run server
+   ```
 
-The app will typically run at `http://localhost:5173`.
+2. **Start the frontend development server:**
+   ```bash
+   npm run dev
+   ```
+
+The backend will run on `http://localhost:3001` and the frontend will typically run at `http://localhost:5173`.
+
 
 ### Building for Production
 

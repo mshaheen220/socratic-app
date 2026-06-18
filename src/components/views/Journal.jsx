@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
-import { THINKING_ERRORS } from '../constants/thinkingErrors';
-import { COGNITIVE_DISTORTIONS } from '../constants/cognitiveDisorders';
-import Tooltip from './Tooltip';
-import Card from './Card';
+import { useState } from 'react';
+import { THINKING_ERRORS } from '../../constants/thinkingErrors';
+import { COGNITIVE_DISTORTIONS } from '../../constants/cognitiveDisorders';
+import Tooltip from '../ui/Tooltip';
+import Card from '../ui/Card';
 
 const Journal = ({ entries, onViewEntry, onDeleteEntry, onProcessDraft }) => {
   const [sortBy, setSortBy] = useState('dateDesc');

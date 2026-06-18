@@ -1,11 +1,11 @@
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 import {
   LineChart, Line, PieChart, Pie, Cell, RadialBarChart, RadialBar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer
 } from 'recharts';
-import WordCloud from './WordCloud';
-import { THINKING_ERRORS } from '../constants/thinkingErrors';
-import { COGNITIVE_DISTORTIONS } from '../constants/cognitiveDisorders';
-import Card from './Card';
+import WordCloud from '../ui/WordCloud';
+import { THINKING_ERRORS } from '../../constants/thinkingErrors';
+import { COGNITIVE_DISTORTIONS } from '../../constants/cognitiveDisorders';
+import Card from '../ui/Card';
 
 const Analytics = ({ entries }) => {
   const stats = useMemo(() => {
@@ -26,9 +26,9 @@ const Analytics = ({ entries }) => {
     const keywordCounts = {};
     const techniqueCounts = {};
     const worryBreakdown = [
-      { name: 'Hypothetical', value: 0, fill: '#9ca3af' }, // Gray
-      { name: 'Actionable', value: 0, fill: '#4f46e5' },   // Indigo
-      { name: 'Acceptance', value: 0, fill: '#14b8a6' }    // Teal
+      { name: 'Hypothetical', value: 0, fill: 'var(--gray-400)' }, 
+      { name: 'Actionable', value: 0, fill: 'var(--primary)' },   
+      { name: 'Acceptance', value: 0, fill: 'var(--teal)' }    
     ];
 
     const completedEntries = entries.filter(e => e.type !== 'draft');
@@ -97,7 +97,7 @@ const Analytics = ({ entries }) => {
       id: d.id,
       label: d.label,
       count: distortionCounts[d.id] || 0,
-      fill: d.color?.background || '#8884d8'
+      fill: d.color?.background || 'var(--primary)'
     })).sort((a, b) => b.count - a.count);
 
     const sortedErrors = Object.entries(errorCounts)
@@ -108,7 +108,7 @@ const Analytics = ({ entries }) => {
           label: def ? def.label : id, 
           count,
           percentage: totalErrors ? Math.round((count / totalErrors) * 100) : 0,
-          fill: def?.color?.background || '#8884d8'
+          fill: def?.color?.background || 'var(--primary)'
         };
       })
       .sort((a, b) => b.count - a.count);
@@ -139,10 +139,10 @@ const Analytics = ({ entries }) => {
       .slice(0, 10);
 
     const sessionTypeData = [
-      { name: 'Distortions', value: distortionSessions, fill: '#4f46e5' },
-      { name: 'Stressors', value: stressorSessions, fill: '#db2777' },
-      { name: 'Worry Tree', value: worrySessions, fill: '#0d9488' },
-      { name: 'Mood Reset', value: moodSessions, fill: '#f97316' }
+      { name: 'Distortions', value: distortionSessions, fill: 'var(--primary)' },
+      { name: 'Stressors', value: stressorSessions, fill: 'var(--secondary)' },
+      { name: 'Worry Tree', value: worrySessions, fill: 'var(--teal)' },
+      { name: 'Mood Reset', value: moodSessions, fill: 'var(--orange)' }
     ].filter(d => d.value > 0);
 
     return { 
@@ -174,7 +174,7 @@ const Analytics = ({ entries }) => {
     <div className="analytics-view">
       <div className="analytics-grid">
         <Card title="Total Sessions">
-          <div style={{ width: '100%', height: 300, position: 'relative' }}>
+          <div className="chart-container-relative">
             <ResponsiveContainer>
               <PieChart>
                 <Pie
@@ -194,23 +194,23 @@ const Analytics = ({ entries }) => {
                 <Legend />
               </PieChart>
             </ResponsiveContainer>
-            <div style={{ position: 'absolute', top: '42%', left: '50%', transform: 'translate(-50%, -50%)', textAlign: 'center', pointerEvents: 'none' }}>
-              <div className="stat-big" style={{ fontSize: '2.5rem', lineHeight: 1 }}>{stats.totalSessions}</div>
-              <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginTop: '0.25rem' }}>Total</div>
+            <div className="pie-chart-center-label">
+              <div className="stat-big adjusted">{stats.totalSessions}</div>
+              <div className="stat-label">Total</div>
             </div>
           </div>
         </Card>
 
         <Card title="Average Scores">
           {stats.hasScores ? (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+            <div className="avg-scores-container">
               <div>
                 <div className="chart-label">
                   <span>Intensity</span>
                   <span>{stats.avgIntensity}</span>
                 </div>
                 <div className="chart-bar-bg">
-                  <div className="chart-bar-fill" style={{ width: `${stats.avgIntensity}%`, backgroundColor: 'var(--warning)' }}></div>
+                  <div className="chart-bar-fill fill-warning" style={{ width: `${stats.avgIntensity}%` }}></div>
                 </div>
               </div>
               {stats.hasEfficacy && (
@@ -220,7 +220,7 @@ const Analytics = ({ entries }) => {
                   <span>{stats.avgEfficacy}</span>
                 </div>
                 <div className="chart-bar-bg">
-                  <div className="chart-bar-fill" style={{ width: `${stats.avgEfficacy}%`, backgroundColor: 'var(--success)' }}></div>
+                  <div className="chart-bar-fill fill-success" style={{ width: `${stats.avgEfficacy}%` }}></div>
                 </div>
               </div>
               )}
@@ -231,7 +231,7 @@ const Analytics = ({ entries }) => {
                   <span>{stats.avgResilience}</span>
                 </div>
                 <div className="chart-bar-bg">
-                  <div className="chart-bar-fill" style={{ width: `${stats.avgResilience}%`, backgroundColor: 'var(--teal)' }}></div>
+                  <div className="chart-bar-fill fill-teal" style={{ width: `${stats.avgResilience}%` }}></div>
                 </div>
               </div>
               )}
@@ -243,7 +243,7 @@ const Analytics = ({ entries }) => {
 
         <Card title="Topic Cloud">
           {stats.wordCloudData.length > 0 ? (
-            <div className="tag-cloud-container" style={{ height: 300, width: '100%' }}>
+            <div className="tag-cloud-container chart-container">
               <WordCloud words={stats.wordCloudData} />
             </div>
           ) : (
@@ -253,7 +253,7 @@ const Analytics = ({ entries }) => {
 
         <Card title="Score Trends">
           {stats.chartData && stats.chartData.length >= 2 ? (
-            <div style={{ width: '100%', height: 300 }}>
+            <div className="chart-container">
               <ResponsiveContainer>
                 <LineChart data={stats.chartData} margin={{ top: 5, right: 20, bottom: 5, left: 0 }}>
                   <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
@@ -270,9 +270,9 @@ const Analytics = ({ entries }) => {
                     itemStyle={{ color: 'var(--text)' }} 
                   />
                   <Legend />
-                  <Line type="monotone" dataKey="intensity" stroke="#f59e0b" fill="none" name="Intensity" strokeWidth={2} activeDot={{ r: 6 }} dot={{ r: 4 }} connectNulls />
-                  <Line type="monotone" dataKey="efficacy" stroke="#059669" fill="none" name="Efficacy" strokeWidth={2} activeDot={{ r: 6 }} dot={{ r: 4 }} connectNulls />
-                  <Line type="monotone" dataKey="resilience" stroke="#0d9488" fill="none" name="Resilience" strokeWidth={2} activeDot={{ r: 6 }} dot={{ r: 4 }} connectNulls />
+                  <Line type="monotone" dataKey="intensity" stroke="var(--warning)" fill="none" name="Intensity" strokeWidth={2} activeDot={{ r: 6 }} dot={{ r: 4 }} connectNulls />
+                  <Line type="monotone" dataKey="efficacy" stroke="var(--success)" fill="none" name="Efficacy" strokeWidth={2} activeDot={{ r: 6 }} dot={{ r: 4 }} connectNulls />
+                  <Line type="monotone" dataKey="resilience" stroke="var(--teal)" fill="none" name="Resilience" strokeWidth={2} activeDot={{ r: 6 }} dot={{ r: 4 }} connectNulls />
                 </LineChart>
               </ResponsiveContainer>
             </div>
@@ -283,7 +283,7 @@ const Analytics = ({ entries }) => {
 
         {stats.hasWorry && (
           <Card title="Worry Tree Outcomes">
-            <div style={{ width: '100%', height: 300 }}>
+            <div className="chart-container">
               <ResponsiveContainer>
                 <PieChart>
                   <Pie
@@ -316,15 +316,14 @@ const Analytics = ({ entries }) => {
                 return (
                   <div key={index} className="chart-item">
                     <div className="chart-label">
-                      <span style={{ fontWeight: 500 }}>{tech.name}</span>
-                      <span style={{ color: 'var(--text-secondary)' }}>{tech.count}</span>
+                      <span className="chart-label-name">{tech.name}</span>
+                      <span className="chart-label-value">{tech.count}</span>
                     </div>
                     <div className="chart-bar-bg">
                       <div 
-                        className="chart-bar-fill" 
+                        className="chart-bar-fill fill-orange" 
                         style={{ 
-                          width: `${percentage}%`, 
-                          backgroundColor: 'var(--orange)' 
+                          width: `${percentage}%`
                         }} 
                       />
                     </div>
@@ -337,13 +336,13 @@ const Analytics = ({ entries }) => {
 
         <Card title="Cognitive Distortions Breakdown">
           {stats.hasDistortions ? (
-            <div style={{ width: '100%', height: 300 }}>
+            <div className="chart-container">
               <ResponsiveContainer>
                 <PieChart>
                   <Pie
                     data={stats.sortedDistortions}
                     labelLine={false}
-                    fill="#8884d8"
+                    fill="var(--primary)"
                     dataKey="count"
                     nameKey="label"
                     innerRadius="80%"
@@ -368,7 +367,7 @@ const Analytics = ({ entries }) => {
 
         <Card title="Thinking Errors">
           {stats.sortedErrors.length > 0 ? (
-            <div style={{ width: '100%', height: 300 }}>
+            <div className="chart-container">
               <ResponsiveContainer>
                 <RadialBarChart 
                   cx="50%" 
