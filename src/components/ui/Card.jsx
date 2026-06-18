@@ -1,5 +1,3 @@
-import React from 'react';
-
 const Card = ({ title, children, className = '', onClick }) => {
   return (
     <div className={`app-card ${className}`} onClick={onClick}>

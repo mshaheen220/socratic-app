@@ -1,0 +1,21 @@
+http://mindframe.theshaheens.info {
+    # Handle API requests by forwarding them to your backend Node.js server
+    handle /api/* {
+        reverse_proxy localhost:3002
+    }
+
+    # For all other requests, serve the static frontend assets
+    handle {
+        root * /Users/michael/Documents/dev/socratic-app/dist
+        file_server
+        try_files {path} /index.html
+    }
+
+    # Enable gzip compression for better performance
+    encode gzip
+
+    # Log errors and access logs
+    log {
+        output file /Users/michael/mindframe_caddy.log
+    }
+}

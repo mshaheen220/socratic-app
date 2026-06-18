@@ -1,7 +1,7 @@
-import React, { useState, useRef } from 'react';
+import { useState, useRef } from 'react';
 import { createPortal } from 'react-dom';
 
-const Tooltip = ({ text, children, style }) => {
+const Tooltip = ({ text, children }) => {
     const [show, setShow] = useState(false);
     const [coords, setCoords] = useState({ top: 0, left: 0 });
     const [placement, setPlacement] = useState('top');
@@ -25,9 +25,8 @@ const Tooltip = ({ text, children, style }) => {
         <div 
             ref={wrapperRef}
             className="tooltip-wrapper"
-            onMouseEnter={handleMouseEnter}
+            onMouseOver={handleMouseEnter}
             onMouseLeave={() => setShow(false)}
-            style={{ position: 'relative', display: 'inline-flex', alignItems: 'center', ...style }}
         >
             {children}
             {show && text && createPortal(

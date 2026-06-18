@@ -1,7 +1,6 @@
-import React from 'react';
-import { THINKING_ERRORS } from '../constants/thinkingErrors';
-import { COGNITIVE_DISTORTIONS } from '../constants/cognitiveDisorders';
-import Tooltip from './Tooltip';
+import { THINKING_ERRORS } from '../../constants/thinkingErrors';
+import { COGNITIVE_DISTORTIONS } from '../../constants/cognitiveDisorders';
+import Tooltip from '../ui/Tooltip';
 
 const SessionDetails = ({ session, onClose }) => {
   if (!session) return null;
@@ -24,9 +23,9 @@ const SessionDetails = ({ session, onClose }) => {
   };
 
   const habitOptions = [
-    {id:'habit', label:'Old Habit', color: { text: '#92400e', background: '#fef3c7' }}, 
-    {id:'past', label:'Past Experience', color: { text: '#6b21a8', background: '#f3e8ff' }}, 
-    {id:'current', label:'Current Truth', color: { text: '#166534', background: '#dcfce7' }}
+    {id:'habit', label:'Old Habit', color: { text: 'var(--orange-dark)', background: 'var(--orange-light)' }}, 
+    {id:'past', label:'Past Experience', color: { text: 'var(--primary-dark)', background: 'var(--primary-light)' }}, 
+    {id:'current', label:'Current Truth', color: { text: 'var(--teal-dark)', background: 'var(--teal-light)' }}
   ];
 
   return (
@@ -122,7 +121,7 @@ const SessionDetails = ({ session, onClose }) => {
 
           {isStressor ? (
             <div className="detail-grid">
-              <div className="detail-group" style={{ gridColumn: '1 / -1' }}>
+              <div className="detail-group detail-group-full-width">
                 <label>Radical Acceptance</label>
                 <p>{session.radicalAcceptance || '-'}</p>
               </div>
@@ -135,12 +134,12 @@ const SessionDetails = ({ session, onClose }) => {
             <div className="detail-grid">
               <div className="detail-group"><label>Type</label><p>{getLabel(session.worryType, [{id:'current', label:'Current Problem'}, {id:'hypothetical', label:'Hypothetical'}])}</p></div>
               <div className="detail-group"><label>Actionable</label><p>{getLabel(session.worryActionable, [{id:'yes', label:'Yes'}, {id:'no', label:'No'}])}</p></div>
-              <div className="detail-group" style={{ gridColumn: '1 / -1' }}><label>Plan / Strategy</label><p>{session.worryPlan || '-'}</p></div>
+              <div className="detail-group detail-group-full-width"><label>Plan / Strategy</label><p>{session.worryPlan || '-'}</p></div>
             </div>
           ) : isMood ? (
             <div className="detail-grid">
               <div className="detail-group"><label>Intensity</label><p>{session.moodIntensityBefore ?? '-'}</p></div>
-              <div className="detail-group" style={{ gridColumn: '1 / -1' }}><label>Explanation</label><p>{session.moodExplanation || '-'}</p></div>
+              <div className="detail-group detail-group-full-width"><label>Explanation</label><p>{session.moodExplanation || '-'}</p></div>
             </div>
           ) : (
             <>
@@ -150,10 +149,9 @@ const SessionDetails = ({ session, onClose }) => {
                   {session.selectedErrors.length > 0 ? (
                     session.selectedErrors.map(id => {
                       const error = THINKING_ERRORS.find(e => e.id === id);
-                      const style = error?.color ? { backgroundColor: error.color.background, color: error.color.text } : {};
                       return (
                         <Tooltip key={id} text={error?.description}>
-                          <span className="tag" style={style}>{error?.label || id}</span>
+                          <span className="tag" style={{ backgroundColor: error?.color?.background, color: error?.color?.text }}>{error?.label || id}</span>
                         </Tooltip>
                       );
                     })
@@ -169,10 +167,9 @@ const SessionDetails = ({ session, onClose }) => {
                   {session.selectedDistortions && session.selectedDistortions.length > 0 ? (
                     session.selectedDistortions.map(id => {
                       const distortion = COGNITIVE_DISTORTIONS.find(d => d.id === id);
-                      const style = distortion?.color ? { backgroundColor: distortion.color.background, color: distortion.color.text } : {};
                       return (
                         <Tooltip key={id} text={distortion?.description}>
-                          <span className="tag" style={style}>{distortion?.label || id}</span>
+                          <span className="tag" style={{ backgroundColor: distortion?.color?.background, color: distortion?.color?.text }}>{distortion?.label || id}</span>
                         </Tooltip>
                       );
                     })
@@ -193,8 +190,7 @@ const SessionDetails = ({ session, onClose }) => {
                     <div className="tags">
                       {session.habitOrPast.map(id => {
                         const option = habitOptions.find(o => o.id === id);
-                        const style = option?.color ? { backgroundColor: option.color.background, color: option.color.text } : {};
-                        return <span key={id} className="tag" style={style}>{option?.label || id}</span>;
+                        return <span key={id} className="tag" style={{ backgroundColor: option?.color?.background, color: option?.color?.text }}>{option?.label || id}</span>;
                       })}
                     </div>
                   ) : (

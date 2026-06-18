@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
-import Card from './Card';
-import { getTriageRecommendation } from '../services/gemini';
+import { useState } from 'react';
+import Card from '../ui/Card';
+import { getTriageRecommendation } from '../../services/gemini';
 
 const ThoughtTriage = ({ onSelect, onCancel, initialThought }) => {
   const [showHelp, setShowHelp] = useState(false);
@@ -32,7 +32,7 @@ const ThoughtTriage = ({ onSelect, onCancel, initialThought }) => {
           <button onClick={() => setShowHelp(true)} className="text-btn">🤔 Not sure? Help me decide</button>
         ) : (
           <div className="help-box">
-            <p>Briefly describe what's on your mind:</p>
+            <label className="section-label">Briefly describe what's on your mind:</label>
             <div className="help-input-group">
               <textarea 
                 value={helpInput} 
@@ -48,7 +48,9 @@ const ThoughtTriage = ({ onSelect, onCancel, initialThought }) => {
                 rows={2}
                 maxLength={300}
               />
-              <button onClick={handleAnalyze} disabled={isAnalyzing || !helpInput.trim()} className="nav-btn primary btn-sm">{isAnalyzing ? '...' : 'Analyze'}</button>
+              <button onClick={handleAnalyze} disabled={isAnalyzing || !helpInput.trim()} className="nav-btn primary triage-analyze-btn">
+                {isAnalyzing ? 'Analyzing...' : 'Analyze Thought'}
+              </button>
             </div>
             {recommendation && (
               <div className="recommendation-result"><strong>Recommendation: {recommendation.type.toUpperCase()}</strong><p>{recommendation.reason}</p></div>

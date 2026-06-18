@@ -1,5 +1,4 @@
-import React from 'react';
-import Tooltip from './Tooltip';
+import Tooltip from '../ui/Tooltip';
 
 /**
  * MultiSelectStep Component
