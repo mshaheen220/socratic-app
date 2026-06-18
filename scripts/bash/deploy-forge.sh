@@ -28,18 +28,7 @@ fi
 echo "🔄 [THEFORGE] Restarting application services with PM2..."
 
 # Define app configurations for PM2
-FRONTEND_APP_NAME="mindframe-frontend"
 BACKEND_APP_NAME="mindframe-backend"
-
-# --- Frontend Service ---
-echo "🖥️  [THEFORGE] Managing frontend service..."
-if pm2 describe "$FRONTEND_APP_NAME" > /dev/null; then
-  echo "Restarting existing frontend service..."
-  pm2 restart "$FRONTEND_APP_NAME"
-else
-  echo "Starting new frontend service..."
-  pm2 start npx --name "$FRONTEND_APP_NAME" -- serve -s "$PROJECT_ROOT/dist" -l 5174
-fi
 
 # --- Backend Service ---
 echo "⚙️  [THEFORGE] Managing backend service..."
@@ -55,5 +44,9 @@ fi
 echo "💾 [THEFORGE] Saving process list..."
 pm2 save
 
-echo "✅ [THEFORGE] PM2 has successfully restarted both services."
+echo "✅ [THEFORGE] PM2 has successfully restarted the backend service."
+
+echo "🔃 [THEFORGE] Reloading Caddy to apply changes..."
+caddy reload --config /Users/michael/.config/caddy/Caddyfile
+
 echo "🌐 [THEFORGE] Mindframe is securely live at mindframe.theshaheens.info"
