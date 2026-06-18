@@ -5,6 +5,13 @@ set -e
 
 echo "🚀 [DEV MAC] Mindframe Deployment Sequence Initiated..."
 
+# --- Branch Check ---
+CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
+if [ "$CURRENT_BRANCH" != "main" ]; then
+  echo -e "\033[0;91m❌ ERROR: Deployments can only be run from the 'main' branch. You are currently on '$CURRENT_BRANCH'.\033[0m"
+  exit 1
+fi
+
 # Handle commit message and version flags from arguments
 COMMIT_MSG="$1"
 if [[ "$COMMIT_MSG" == "--minor" || "$COMMIT_MSG" == "--major" || -z "$COMMIT_MSG" ]]; then
