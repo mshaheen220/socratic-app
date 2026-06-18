@@ -11,11 +11,6 @@ echo "⚙️ [THEFORGE] Preparing to deploy Mindframe..."
 # Change into the project directory first to ensure all subsequent commands run in the correct context
 cd "$PROJECT_ROOT"
 
-# --- Git Update ---
-echo "⬇️  [THEFORGE] Pulling latest code from GitHub..."
-git fetch --all
-git reset --hard origin/main
-
 # --- Dependency Installation ---
 echo "📦 [THEFORGE] Installing production dependencies..."
 # Use --omit=dev to avoid installing dev dependencies like eslint, nodemon, etc.

@@ -1,6 +1,6 @@
 const API_BASE_URL = import.meta.env.PROD
   ? 'https://mindframe.theshaheens.info' // The reverse proxy will handle routing to the correct port
-  : 'http://localhost:3001';
+  : 'http://localhost:3002';
 const API_URL = `${API_BASE_URL}/api`;
 
 /**

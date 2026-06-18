@@ -35,8 +35,8 @@ git commit -m "$COMMIT_MSG"
 git push
 
 echo "🔗 [DEV MAC] Remotely triggering the deployment process handler on TheForge..."
-echo -e "\033[1;5;95m🔑 HEADS UP: Please enter your password for TheForge below...\033[0m"
-ssh michael@TheForge "cd /Users/michael/Documents/dev/socratic-app && bash ./scripts/bash/deploy-forge.sh"
+echo -e "\033[1;5;95m🔑 HEADS UP: Please enter your password for TheForge below...\033[0m" # This is for the SSH connection
+ssh michael@TheForge "cd /Users/michael/Documents/dev/socratic-app && git fetch --all && git reset --hard origin/main && bash ./scripts/bash/deploy-forge.sh"
 
 echo "🎉 [DEV MAC] Deployment sequence completely finished!"
 echo "🌐 [DEV MAC] Mindframe is securely live at mindframe.theshaheens.info"
