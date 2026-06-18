@@ -35,6 +35,7 @@ git commit -m "$COMMIT_MSG"
 git push
 
 echo "🔗 [DEV MAC] Remotely triggering the deployment process handler on TheForge..."
+echo -e "\033[1;5;95m🔑 HEADS UP: Please enter your password for TheForge below...\033[0m"
 ssh michael@TheForge "cd /Users/michael/Documents/dev/socratic-app && git reset --hard origin/main && bash ./scripts/bash/deploy-forge.sh"
 
 echo "🎉 [DEV MAC] Deployment sequence completely finished!"

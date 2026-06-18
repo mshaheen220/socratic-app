@@ -13,15 +13,18 @@ echo "⬇️  [THEFORGE] Pulling latest code from GitHub..."
 git fetch --all
 git reset --hard origin/main
 
+# Change into the project directory to ensure all subsequent commands run in the correct context
+cd "$PROJECT_ROOT"
+
 # --- Dependency Installation ---
 echo "📦 [THEFORGE] Installing production dependencies..."
 # Use --omit=dev to avoid installing dev dependencies like eslint, nodemon, etc.
-npm install --prefix "$PROJECT_ROOT" --omit=dev --loglevel=error --no-audit --no-fund
+npm install --omit=dev --loglevel=error --no-audit --no-fund
 
 # --- Environment Loading ---
 echo "🔒 [THEFORGE] Loading environment variables..."
-if [ -f "$PROJECT_ROOT/.env" ]; then
-  export $(cat "$PROJECT_ROOT/.env" | xargs)
+if [ -f ".env" ]; then
+  export $(cat .env | xargs)
 fi
 
 # --- PM2 Process Management ---
@@ -37,7 +40,7 @@ if pm2 describe "$BACKEND_APP_NAME" > /dev/null; then
   pm2 restart "$BACKEND_APP_NAME"
 else
   echo "Starting new backend service..."
-  pm2 start "$PROJECT_ROOT/src/server/index.js" --name "$BACKEND_APP_NAME"
+  pm2 start "src/server/index.js" --name "$BACKEND_APP_NAME"
 fi
 
 # Save the process list so PM2 can resurrect them on server reboot
