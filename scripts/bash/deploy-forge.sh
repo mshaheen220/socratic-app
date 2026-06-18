@@ -8,13 +8,13 @@ export PATH=$PATH:/usr/local/bin:/opt/homebrew/bin:~/.npm-global/bin
 
 echo "⚙️ [THEFORGE] Preparing to deploy Mindframe..."
 
+# Change into the project directory first to ensure all subsequent commands run in the correct context
+cd "$PROJECT_ROOT"
+
 # --- Git Update ---
 echo "⬇️  [THEFORGE] Pulling latest code from GitHub..."
 git fetch --all
 git reset --hard origin/main
-
-# Change into the project directory to ensure all subsequent commands run in the correct context
-cd "$PROJECT_ROOT"
 
 # --- Dependency Installation ---
 echo "📦 [THEFORGE] Installing production dependencies..."
@@ -35,17 +35,17 @@ BACKEND_APP_NAME="mindframe-backend"
 
 # --- Backend Service ---
 echo "⚙️  [THEFORGE] Managing backend service..."
-if pm2 describe "$BACKEND_APP_NAME" > /dev/null; then
+if pm2 describe "$BACKEND_APP_NAME" > /dev/null 2>&1; then
   echo "Restarting existing backend service..."
-  pm2 restart "$BACKEND_APP_NAME"
+  pm2 restart "$BACKEND_APP_NAME" || npx pm2 restart "$BACKEND_APP_NAME"
 else
   echo "Starting new backend service..."
-  pm2 start "src/server/index.js" --name "$BACKEND_APP_NAME"
+  pm2 start "src/server/index.js" --name "$BACKEND_APP_NAME" || npx pm2 start "src/server/index.js" --name "$BACKEND_APP_NAME"
 fi
 
 # Save the process list so PM2 can resurrect them on server reboot
 echo "💾 [THEFORGE] Saving process list..."
-pm2 save
+pm2 save || npx pm2 save
 
 echo "✅ [THEFORGE] PM2 has successfully restarted the backend service."
 
