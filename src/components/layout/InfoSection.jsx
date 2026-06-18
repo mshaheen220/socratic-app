@@ -1,3 +1,5 @@
+import { version } from '../../../package.json';
+
 const InfoSection = ({ onClose }) => {
   return (
     <div className="modal-overlay" onClick={onClose}>
@@ -26,7 +28,10 @@ const InfoSection = ({ onClose }) => {
           <h4>Privacy & Data</h4>
           <p>Your data is securely stored in your user account. You can use the <strong>Export</strong> button to download a full copy of your history at any time, and the <strong>Import</strong> button to add sessions from a file.</p>
 
-          <p className="info-footer"><em>Based on worksheets and concepts from <a href="https://www.therapistaid.com" target="_blank" rel="noopener noreferrer">TherapistAid.com</a>. AI analysis is generated using Google Gemini (gemini-2.5-flash-lite).</em></p>
+          <p className="info-footer">
+            <em>Based on worksheets and concepts from <a href="https://www.therapistaid.com" target="_blank" rel="noopener noreferrer">TherapistAid.com</a>. AI analysis is generated using Google Gemini (gemini-2.5-flash-lite).</em> <br />
+            Version {version}
+          </p>
         </div>
       </div>
     </div>
