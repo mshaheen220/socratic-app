@@ -1,5 +1,3 @@
-
-
 const QuestionStep = ({ label, value, onChange, placeholder }) => (
   <div className="section">
     <label className="section-label">{label}</label>

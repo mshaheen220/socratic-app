@@ -6,10 +6,6 @@ PROJECT_ROOT="/Users/michael/Documents/dev/socratic-app"
 # Ensure PM2's path is available to the script
 export PATH=$PATH:/usr/local/bin:/opt/homebrew/bin:~/.npm-global/bin
 
-# IMPORTANT: Replace with a strong, unique secret in a secure environment variable
-# For demonstration, it's hardcoded, but in production, use a proper secret management system
-export JWT_SECRET="your_super_secret_jwt_key_for_production_change_me_now"
-
 echo "⚙️ [THEFORGE] Preparing to deploy Mindframe..."
 
 # --- Git Update ---
@@ -21,6 +17,12 @@ git reset --hard origin/main
 echo "📦 [THEFORGE] Installing production dependencies..."
 # Use --omit=dev to avoid installing dev dependencies like eslint, nodemon, etc.
 npm install --prefix "$PROJECT_ROOT" --omit=dev --loglevel=error --no-audit --no-fund
+
+# --- Environment Loading ---
+echo "🔒 [THEFORGE] Loading environment variables..."
+if [ -f "$PROJECT_ROOT/.env" ]; then
+  export $(cat "$PROJECT_ROOT/.env" | xargs)
+fi
 
 # --- PM2 Process Management ---
 echo "🔄 [THEFORGE] Restarting application services with PM2..."

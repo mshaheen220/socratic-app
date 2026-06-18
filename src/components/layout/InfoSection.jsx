@@ -1,5 +1,3 @@
-
-
 const InfoSection = ({ onClose }) => {
   return (
     <div className="modal-overlay" onClick={onClose}>

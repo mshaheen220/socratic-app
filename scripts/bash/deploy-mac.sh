@@ -26,6 +26,7 @@ npm run build
 
 echo "🚀 [DEV MAC] Syncing application files to TheForge via rsync (excluding node_modules, .git, etc.)..."
 # We only need to sync the compiled frontend assets. The server will get the rest from Git.
+echo -e "\033[1;5;95m🔑 HEADS UP: Please enter your password for TheForge below...\033[0m"
 rsync -avz --delete ./dist/ michael@TheForge:/Users/michael/Documents/dev/socratic-app/dist/
 
 echo "💾 [DEV MAC] Committing and pushing version bump and changes to GitHub..."

@@ -1,4 +1,3 @@
-
 import { THINKING_ERRORS } from '../../constants/thinkingErrors';
 import { COGNITIVE_DISTORTIONS } from '../../constants/cognitiveDisorders';
 import Tooltip from '../ui/Tooltip';

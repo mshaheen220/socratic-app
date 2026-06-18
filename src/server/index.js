@@ -1,6 +1,9 @@
 const express = require('express');
 const cors = require('cors');
 
+// Load environment variables from .env file in development
+if (process.env.NODE_ENV !== 'production') require('dotenv').config();
+
 const authRoutes = require('./routes/auth');
 const settingsRoutes = require('./routes/settings');
 const sessionRoutes = require('./routes/sessions');

@@ -1,4 +1,3 @@
-
 import QuestionStep from './QuestionStep';
 import MultiSelectStep from './MultiSelectStep';
 import { THINKING_ERRORS } from '../../constants/thinkingErrors';
