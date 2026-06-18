@@ -24,6 +24,17 @@ module.exports = {
     'import/no-unresolved': 'error', // Explicitly catch bad/missing imports
     'react/no-unescaped-entities': 'off',
   },
+  overrides: [
+    {
+      files: ['vite.config.js'], // Apply these rules only to vite.config.js
+      parserOptions: {
+        sourceType: 'script', // Treat it as a CommonJS script
+      },
+      rules: {
+        'import/no-unresolved': 'off', // Turn off import resolution checks for this file
+      },
+    },
+  ],
   settings: {
     react: {
       version: 'detect',

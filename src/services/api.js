@@ -1,5 +1,5 @@
 const API_BASE_URL = import.meta.env.PROD
-  ? 'http://mindframe.theshaheens.info:3001' // Replace with your actual production backend URL
+  ? 'https://mindframe.theshaheens.info:3001' // Replace with your actual production backend URL
   : 'http://localhost:3001';
 const API_URL = `${API_BASE_URL}/api`;
 
